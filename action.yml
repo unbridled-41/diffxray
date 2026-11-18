@@ -1,0 +1,106 @@
+name: "DiffXray — PR Blast-Radius & Silent Risk Review"
+description: "X-ray Pull Requests with guided reading order, moved-code collapsing, untouched downstream caller blast radius, and silent-bug detection."
+author: "DiffXray Contributors"
+
+branding:
+  icon: "activity"
+  color: "green"
+
+inputs:
+  github-token:
+    description: "GitHub token used to post/update sticky Pull Request comments."
+    required: false
+    default: ${{ github.token }}
+  fail-on:
+    description: "Optional severity threshold to fail check ('critical', 'high', 'medium', 'low', or '' to never fail)."
+    required: false
+    default: ""
+  post-comment:
+    description: "Post or update a sticky DiffXray Review Map comment on the Pull Request."
+    required: false
+    default: "true"
+
+outputs:
+  trust-score:
+    description: "Computed DiffXray Trust Score (0-100)."
+    value: ${{ steps.xray.outputs.trust_score }}
+  grade:
+    description: "Computed Trust Grade (A/B/C/D/F)."
+    value: ${{ steps.xray.outputs.grade }}
+  findings-count:
+    description: "Total count of silent-hazard findings."
+    value: ${{ steps.xray.outputs.findings_count }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Run DiffXray Analysis
+      id: xray
+      shell: bash
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        mkdir -p .tmp
+        DIFF_REF="${BASE_SHA}...${HEAD_SHA}"
+        DIFFXRAY_TITLE="PR #${PR_NUMBER}: ${PR_TITLE}" node "${{ github.action_path }}/bin/diffxray.mjs" "$DIFF_REF" \
+          --markdown .tmp/diffxray-tour.md \
+          --sarif .tmp/diffxray-report.sarif \
+          --json > .tmp/diffxray-report.json
+
+        node -e '
+          const fs = require("node:fs");
+          const r = JSON.parse(fs.readFileSync(".tmp/diffxray-report.json", "utf8"));
+          const out = process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(out, `trust_score=${r.riskReport.trustScore}\n`);
+          fs.appendFileSync(out, `grade=${r.riskReport.grade}\n`);
+          fs.appendFileSync(out, `findings_count=${r.riskReport.counts.total}\n`);
+        '
+
+        if [ -n "$FAIL_ON" ]; then
+          node "${{ github.action_path }}/bin/diffxray.mjs" "$DIFF_REF" --fail-on "$FAIL_ON" --no-color
+        fi
+
+    - name: Post or Update Sticky PR Comment
+      if: ${{ inputs.post-comment == 'true' && github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require("node:fs");
+          const body = fs.readFileSync(".tmp/diffxray-tour.md", "utf8");
+          const marker = "<!-- diffxray-sticky-comment -->";
+          const { owner, repo } = context.repo;
+          const issue_number = context.payload.pull_request.number;
+
+          const comments = await github.paginate(github.rest.issues.listComments, {
+            owner,
+            repo,
+            issue_number,
+            per_page: 100,
+          });
+          const existing = comments.find((c) => c.body && c.body.includes(marker));
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner,
+              repo,
+              comment_id: existing.id,
+              body,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
+          }

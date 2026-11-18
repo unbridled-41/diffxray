@@ -1,0 +1,25 @@
+name: DiffXray PR Review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  xray-pr:
+    name: DiffXray Self-Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full git history for PR diff
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run DiffXray Action
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          post-comment: "true"
