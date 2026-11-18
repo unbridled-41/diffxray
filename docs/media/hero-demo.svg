@@ -1,179 +1,170 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 546" width="1040" height="546" role="img" aria-label="DiffXray Editorial Blast-Radius &amp; Silent Risk Demo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" width="1040" height="560" role="img" aria-label="DiffXray Studio — Guided Diff Tour and Blast-Radius Canvas">
   <style>
-    :root {
-      --h-bg: #FAF9F5;
-      --h-panel: #F2EFE7;
-      --h-card: #FFFFFF;
-      --h-code: #FAF8F3;
-      --h-border: #E4E0D4;
-      --h-fg: #141413;
-      --h-muted: #66635B;
-      --h-dim: #949086;
-      --h-add-bg: #EEF6EE;
-      --h-add-fg: #2E5935;
-      --h-del-bg: #FCF0EE;
-      --h-del-fg: #993126;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --h-bg: #191816;
-        --h-panel: #21201D;
-        --h-card: #262521;
-        --h-code: #1D1C19;
-        --h-border: #36342E;
-        --h-fg: #F4F1EA;
-        --h-muted: #A8A49A;
-        --h-dim: #757168;
-        --h-add-bg: rgba(110, 158, 117, 0.14);
-        --h-add-fg: #97C79E;
-        --h-del-bg: rgba(223, 104, 92, 0.14);
-        --h-del-fg: #F0988F;
-      }
-    }
-    .serif { font-family: Georgia, "Newsreader", "Times New Roman", serif; }
+    .serif { font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif; }
     .ui { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif; }
     .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
-    @keyframes flowDash {
-      to { stroke-dashoffset: -36; }
-    }
-    @keyframes softPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.68; }
-    }
-    .flow-edge {
-      stroke-dasharray: 6 6;
-      animation: flowDash 2s linear infinite;
-    }
-    .pulse-caller {
-      animation: softPulse 2.4s ease-in-out infinite;
-    }
   </style>
+  <defs>
+    <pattern id="paper-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#D8D3C5" />
+    </pattern>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C04438" />
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4A729E" />
+    </marker>
+    <marker id="arr-dim" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#8E8A80" />
+    </marker>
+  </defs>
 
-  <!-- Archival Window Frame -->
-  <rect width="1040" height="546" rx="18" fill="var(--h-bg)" stroke="var(--h-border)" stroke-width="1.5" />
-  <rect x="1" y="1" width="1038" height="46" rx="17" fill="var(--h-panel)" />
-  <line x1="0" y1="47" x2="1040" y2="47" stroke="var(--h-border)" stroke-width="1" />
-  <circle cx="24" cy="24" r="5" fill="#D97757" fill-opacity="0.75" />
-  <circle cx="41" cy="24" r="5" fill="#B57B2E" fill-opacity="0.65" />
-  <circle cx="58" cy="24" r="5" fill="#4E7A55" fill-opacity="0.70" />
-  <text x="82" y="28" class="mono" font-size="12" fill="var(--h-muted)">$ npx github:unbridled-41/diffxray --pr 418 --open</text>
+  <!-- Warm Stone Editorial Gallery Mat -->
+  <rect width="1040" height="560" rx="22" fill="#EDE9DF" stroke="#DED9CC" stroke-width="1" />
 
-  <!-- Editorial Pills -->
-  <rect x="702" y="11" width="154" height="26" rx="13" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1" />
-  <text x="779" y="28" text-anchor="middle" class="mono" font-size="10.5" font-weight="700" fill="#D97757">76% MOTION COLLAPSED</text>
+  <!-- Inner Warm Cream Studio Sheet -->
+  <rect x="20" y="20" width="1000" height="520" rx="15" fill="#FAF9F5" stroke="#DFDBD0" stroke-width="1" />
 
-  <rect x="866" y="11" width="154" height="26" rx="13" fill="#C04438" fill-opacity="0.12" stroke="#C04438" stroke-width="1.1" />
-  <text x="943" y="28" text-anchor="middle" class="mono" font-size="10.5" font-weight="700" fill="#C04438">SILENT RISKS CAUGHT</text>
+  <!-- Studio Header (Matches Live Web Studio UI) -->
+  <rect x="21" y="21" width="998" height="56" rx="14" fill="#F3F0E8" />
+  <line x1="20" y1="77" x2="1020" y2="77" stroke="#E5E1D6" stroke-width="1" />
 
-  <!-- Subheader Summary -->
-  <rect x="1" y="48" width="1038" height="42" fill="var(--h-bg)" />
-  <line x1="0" y1="90" x2="1040" y2="90" stroke="var(--h-border)" stroke-width="1" />
-  <text x="24" y="74" class="serif" font-size="16" font-weight="600" fill="var(--h-fg)">PR #418: Migrate checkout &amp; organization session auth to v2</text>
-  <text x="530" y="74" class="mono" font-size="11.5" fill="#4E7A55">~4 min focused review</text>
-  <text x="700" y="74" class="mono" font-size="11.5" fill="#4A729E">3 untouched callers</text>
-  <text x="866" y="74" class="mono" font-size="11.5" fill="#C04438">3 silent hazards</text>
+  <g transform="translate(40, 35)">
+    <rect width="28" height="28" rx="8" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.3" />
+    <circle cx="14" cy="14" r="3.2" fill="#D97757" />
+    <circle cx="14" cy="14" r="8.8" fill="none" stroke="#D97757" stroke-width="1.15" stroke-dasharray="2.8 2.2" />
+  </g>
+  <text x="80" y="47" class="serif" font-size="16" font-weight="600" fill="#141413">PR #418: Migrate checkout &amp; organization auth to v2 service</text>
+  <text x="80" y="64" class="mono" font-size="10.5" fill="#6B6860">acme/cloud-billing#418 · 7 files (+42 / -26) · ~4 min focused review</text>
 
-  <!-- LEFT PANE: GUIDED EDITORIAL DIFF & RISK READER -->
-  <rect x="20" y="106" width="534" height="420" rx="14" fill="var(--h-panel)" stroke="var(--h-border)" />
-  <text x="36" y="130" class="mono" font-size="10.5" font-weight="700" letter-spacing="0.5" fill="var(--h-muted)">CHAPTER 1 · PUBLIC CONTRACTS &amp; AUTH BOUNDARIES</text>
+  <!-- Header Action Pills -->
+  <rect x="668" y="34" width="142" height="28" rx="14" fill="#FCF0EE" stroke="#C04438" stroke-width="1" />
+  <text x="739" y="52" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="#C04438">Trust 0/100 · Grade F</text>
 
-  <!-- Warm Terracotta Collapsed Move Pill -->
-  <rect x="34" y="142" width="506" height="30" rx="8" fill="#D97757" fill-opacity="0.11" stroke="#D97757" stroke-dasharray="4 3" />
-  <text x="46" y="161" class="mono" font-size="11" font-weight="600" fill="#D97757">⇄ 64 lines moved from src/legacy/billing.ts (96% match) — auto-collapsed</text>
+  <rect x="818" y="34" width="88" height="28" rx="14" fill="#FFFFFF" stroke="#E5E1D6" />
+  <text x="862" y="52" text-anchor="middle" class="ui" font-size="11" font-weight="500" fill="#141413">Diff: Split</text>
 
-  <!-- File 1 Card -->
-  <rect x="34" y="182" width="506" height="196" rx="10" fill="var(--h-card)" stroke="var(--h-border)" />
-  <rect x="35" y="183" width="504" height="28" rx="9" fill="var(--h-code)" />
-  <text x="47" y="201" class="mono" font-size="11.5" font-weight="600" fill="var(--h-fg)">src/api/checkout-controller.ts</text>
-  <text x="444" y="201" class="mono" font-size="11" font-weight="600" fill="#C04438">2 silent hazards</text>
+  <rect x="914" y="34" width="88" height="28" rx="14" fill="#FFFFFF" stroke="#E5E1D6" />
+  <text x="958" y="52" text-anchor="middle" class="ui" font-size="11" font-weight="500" fill="#141413">Collapsed</text>
 
-  <text x="46" y="227" class="mono" font-size="11.5" fill="var(--h-dim)"> 8   export async function postCheckout(req: Request, res: Response) {</text>
+  <!-- Studio Tab Bar -->
+  <rect x="21" y="78" width="998" height="36" fill="#FAF9F5" />
+  <line x1="20" y1="114" x2="1020" y2="114" stroke="#E5E1D6" stroke-width="1" />
+  <text x="42" y="100" class="ui" font-size="12" font-weight="600" fill="#141413">1. Guided Tour</text>
+  <line x1="40" y1="113" x2="128" y2="113" stroke="#D97757" stroke-width="2" />
+  <text x="156" y="100" class="ui" font-size="12" font-weight="500" fill="#6B6860">2. Blast-Radius Map</text>
+  <text x="298" y="100" class="ui" font-size="12" font-weight="500" fill="#6B6860">3. Silent Risk Radar</text>
+  <text x="438" y="100" class="ui" font-size="12" font-weight="500" fill="#6B6860">4. PR Card &amp; Export</text>
 
-  <rect x="35" y="234" width="504" height="21" fill="var(--h-del-bg)" />
-  <text x="46" y="249" class="mono" font-size="11.5" fill="var(--h-del-fg)">-9     await requireAuth(req);</text>
+  <!-- LEFT PANE: Guided Chapter Reader -->
+  <g transform="translate(38, 130)">
+    <line x1="0" y1="2" x2="0" y2="32" stroke="#D97757" stroke-width="3" />
+    <text x="12" y="16" class="serif" font-size="15.5" font-weight="600" fill="#141413">Chapter 1: Entrypoints &amp; Public Contracts</text>
+    <text x="12" y="32" class="ui" font-size="11.5" fill="#6B6860">Ordered from outer routes and broken signatures inward.</text>
 
-  <rect x="35" y="255" width="504" height="21" fill="var(--h-del-bg)" />
-  <rect x="88" y="257" width="42" height="17" rx="3" fill="#C04438" fill-opacity="0.22" />
-  <text x="46" y="270" class="mono" font-size="11.5" fill="var(--h-del-fg)">-10    await recordAuditEvent("checkout.started", req.user.id);</text>
+    <!-- Collapsed Move Banner -->
+    <rect x="0" y="46" width="486" height="28" rx="8" fill="#FAF2EC" stroke="#E5C5B3" stroke-dasharray="4 3" />
+    <text x="12" y="64" class="mono" font-size="10.5" font-weight="500" fill="#B55B3C">⇄ 64 moved lines collapsed (moved → src/services/invoice.ts)</text>
 
-  <rect x="35" y="276" width="504" height="21" fill="var(--h-add-bg)" />
-  <text x="46" y="291" class="mono" font-size="11.5" fill="var(--h-add-fg)">+9     recordAuditEvent("checkout.started", req.user?.id);</text>
+    <!-- File Diff Card -->
+    <rect x="0" y="84" width="486" height="214" rx="11" fill="#FFFFFF" stroke="#E5E1D6" />
+    <rect x="1" y="85" width="484" height="30" rx="10" fill="#F3F0E8" />
+    <line x1="0" y1="115" x2="486" y2="115" stroke="#E5E1D6" />
+    <text x="14" y="104" class="mono" font-size="11" font-weight="600" fill="#141413">src/api/checkout-controller.ts</text>
+    <rect x="394" y="91" width="78" height="18" rx="9" fill="#FCF0EE" stroke="#C04438" stroke-width="0.9" />
+    <text x="433" y="103" text-anchor="middle" class="mono" font-size="9.5" font-weight="600" fill="#C04438">2 hazards</text>
 
-  <!-- Archival Risk Callout -->
-  <rect x="46" y="306" width="482" height="60" rx="8" fill="#C04438" fill-opacity="0.09" stroke="#C04438" stroke-width="1.2" />
-  <text x="58" y="325" class="mono" font-size="11" font-weight="700" fill="#C04438">[CRITICAL · auth-guard-removed] Auth guard 'requireAuth(req)' deleted</text>
-  <text x="58" y="342" class="mono" font-size="10.5" fill="var(--h-muted)">[HIGH · unawaited-async] Dropped 'await' before recordAuditEvent()</text>
-  <rect x="380" y="345" width="138" height="16" rx="8" fill="#D97757" />
-  <text x="449" y="356" text-anchor="middle" class="mono" font-size="9.5" font-weight="600" fill="#FAF9F5">Copy Agent Fix Prompt</text>
+    <text x="14" y="136" class="mono" font-size="10.5" fill="#8A867C"> 8  export async function postCheckout(req: Request, res: Response) {</text>
+    <rect x="1" y="144" width="484" height="21" fill="#FCF0EE" />
+    <text x="14" y="158" class="mono" font-size="10.5" fill="#993126">-9    await requireAuth(req);</text>
+    <rect x="1" y="165" width="484" height="21" fill="#FCF0EE" />
+    <text x="14" y="179" class="mono" font-size="10.5" fill="#993126">-10   await recordAuditEvent("checkout.started", req.user.id);</text>
+    <rect x="1" y="186" width="484" height="21" fill="#EEF6EE" />
+    <text x="14" y="200" class="mono" font-size="10.5" fill="#2E5935">+9    recordAuditEvent("checkout.started", req.user?.id);</text>
 
-  <!-- File 2 Card -->
-  <rect x="34" y="388" width="506" height="124" rx="10" fill="var(--h-card)" stroke="var(--h-border)" />
-  <rect x="35" y="389" width="504" height="28" rx="9" fill="var(--h-code)" />
-  <text x="47" y="407" class="mono" font-size="11.5" font-weight="600" fill="var(--h-fg)">src/auth/session.ts</text>
-  <text x="366" y="407" class="mono" font-size="11" font-weight="600" fill="#4A729E">2 untouched callers hit</text>
+    <!-- Inline Hazard Callout -->
+    <rect x="12" y="218" width="462" height="68" rx="8" fill="#FCF3F1" stroke="#D99B93" />
+    <rect x="12" y="218" width="3.5" height="68" rx="1.75" fill="#C04438" />
+    <text x="26" y="238" class="ui" font-size="11.5" font-weight="600" fill="#141413">[CRITICAL · auth-guard-removed] Middleware requireAuth(req) deleted</text>
+    <text x="26" y="255" class="ui" font-size="11" fill="#6B6860">[HIGH · unawaited-async] Dropped await before recordAuditEvent()</text>
+    <rect x="336" y="261" width="126" height="19" rx="9.5" fill="#D97757" />
+    <text x="399" y="274" text-anchor="middle" class="ui" font-size="10" font-weight="600" fill="#FAF9F5">Copy Fix Prompt</text>
 
-  <rect x="35" y="422" width="504" height="21" fill="var(--h-del-bg)" />
-  <text x="46" y="437" class="mono" font-size="11" fill="var(--h-del-fg)">-1  export function verifySessionToken(bearer: string) {</text>
-  <rect x="35" y="443" width="504" height="21" fill="var(--h-add-bg)" />
-  <rect x="328" y="445" width="150" height="17" rx="3" fill="#4E7A55" fill-opacity="0.22" />
-  <text x="46" y="458" class="mono" font-size="11" fill="var(--h-add-fg)">+1  export function verifySessionToken(bearer: string, requiredOrgId: string) {</text>
-  <text x="46" y="490" class="mono" font-size="10.5" fill="#B57B2E">⚠ Required params increased (1 → 2) while 2 downstream files were NOT updated</text>
-
-  <!-- RIGHT PANE: EDITORIAL BLAST-RADIUS ARCHITECTURE MAP -->
-  <rect x="568" y="106" width="452" height="420" rx="14" fill="var(--h-panel)" stroke="var(--h-border)" />
-  <text x="586" y="130" class="mono" font-size="10.5" font-weight="700" letter-spacing="0.5" fill="var(--h-muted)">INTERACTIVE BLAST-RADIUS MAP (WHAT DIFFS HIDE)</text>
-
-  <text x="588" y="158" class="mono" font-size="10" font-weight="700" fill="var(--h-dim)">MODIFIED IN PR</text>
-  <text x="816" y="158" class="mono" font-size="10" font-weight="700" fill="#4A729E">UNTOUCHED CALLERS</text>
-
-  <!-- Animated Bezier Edges -->
-  <path d="M 768 206 C 795 206, 795 196, 814 196" fill="none" stroke="#C04438" stroke-width="2" class="flow-edge" />
-  <path d="M 768 206 C 795 206, 795 272, 814 272" fill="none" stroke="#C04438" stroke-width="2" class="flow-edge" />
-  <path d="M 768 296 C 795 296, 795 272, 814 272" fill="none" stroke="#4A729E" stroke-width="1.8" class="flow-edge" />
-  <path d="M 768 386 C 795 386, 795 366, 814 366" fill="none" stroke="#4A729E" stroke-width="1.8" class="flow-edge" />
-  <path d="M 676 232 L 676 270" fill="none" stroke="var(--h-dim)" stroke-width="1.4" />
-
-  <!-- Modified Nodes -->
-  <g transform="translate(586, 180)">
-    <rect width="182" height="52" rx="10" fill="var(--h-card)" stroke="#C04438" stroke-width="1.5" />
-    <text x="12" y="21" class="mono" font-size="11" font-weight="700" fill="var(--h-fg)">auth/session.ts</text>
-    <text x="12" y="39" class="mono" font-size="10" fill="#C04438">signature break (1 → 2)</text>
+    <!-- Bottom Signature Break Summary -->
+    <rect x="0" y="310" width="486" height="82" rx="11" fill="#FFFFFF" stroke="#E5E1D6" />
+    <text x="14" y="332" class="mono" font-size="11" font-weight="600" fill="#141413">src/auth/session.ts</text>
+    <text x="352" y="332" class="mono" font-size="10" font-weight="600" fill="#4A729E">2 untouched callers</text>
+    <text x="14" y="354" class="mono" font-size="10.5" fill="#2E5935">+ verifySessionToken(bearer: string, requiredOrgId: string)</text>
+    <text x="14" y="374" class="ui" font-size="11" fill="#6B6860">Required arity changed (1 → 2) while 2 workspace callers were not updated.</text>
   </g>
 
-  <g transform="translate(586, 270)">
-    <rect width="182" height="52" rx="10" fill="var(--h-card)" stroke="#D97757" stroke-width="1.5" />
-    <text x="12" y="21" class="mono" font-size="11" font-weight="700" fill="var(--h-fg)">services/invoice.ts</text>
-    <text x="12" y="39" class="mono" font-size="10" fill="#D97757">+22 · moved + delta</text>
-  </g>
+  <!-- RIGHT PANE: Draggable Dot-Grid Blast-Radius Canvas -->
+  <g transform="translate(542, 130)">
+    <rect width="460" height="392" rx="12" fill="#FAF9F5" stroke="#E5E1D6" />
+    <rect x="1" y="1" width="458" height="390" rx="11" fill="url(#paper-dots)" />
 
-  <g transform="translate(586, 360)">
-    <rect width="182" height="52" rx="10" fill="var(--h-card)" stroke="#C04438" stroke-width="1.5" />
-    <text x="12" y="21" class="mono" font-size="11" font-weight="700" fill="var(--h-fg)">api/checkout.ts</text>
-    <text x="12" y="39" class="mono" font-size="10" fill="#C04438">auth guard removed</text>
-  </g>
+    <!-- Top Hint & Controls -->
+    <rect x="14" y="12" width="198" height="24" rx="12" fill="#FFFFFF" stroke="#E5E1D6" />
+    <text x="26" y="27.5" class="mono" font-size="9.5" fill="#6B6860">✥ Drag nodes or lanes freely</text>
 
-  <!-- Untouched Callers -->
-  <g transform="translate(814, 170)" class="pulse-caller">
-    <rect width="190" height="54" rx="10" fill="var(--h-card)" stroke="#C04438" stroke-width="1.6" stroke-dasharray="5 3" />
-    <text x="12" y="21" class="mono" font-size="11" font-weight="700" fill="var(--h-fg)">routes/enterprise-sso.ts</text>
-    <text x="12" y="39" class="mono" font-size="10" fill="#C04438">⚠ calls verifySessionToken(1)</text>
-  </g>
+    <rect x="318" y="12" width="60" height="24" rx="12" fill="#FFFFFF" stroke="#E5E1D6" />
+    <text x="348" y="27.5" text-anchor="middle" class="ui" font-size="10" font-weight="500" fill="#141413">Fit View</text>
+    <rect x="384" y="12" width="62" height="24" rx="12" fill="#FFFFFF" stroke="#E5E1D6" />
+    <text x="415" y="27.5" text-anchor="middle" class="ui" font-size="10" font-weight="500" fill="#141413">Reset</text>
 
-  <g transform="translate(814, 248)" class="pulse-caller">
-    <rect width="190" height="54" rx="10" fill="var(--h-card)" stroke="#C04438" stroke-width="1.6" stroke-dasharray="5 3" />
-    <text x="12" y="21" class="mono" font-size="11" font-weight="700" fill="var(--h-fg)">workers/renewal.ts</text>
-    <text x="12" y="39" class="mono" font-size="10" fill="#C04438">⚠ untouched · runtime error</text>
-  </g>
+    <!-- Lane Pills -->
+    <rect x="16" y="50" width="144" height="22" rx="11" fill="#F3F0E8" stroke="#CEC9BA" />
+    <text x="28" y="64.5" class="mono" font-size="9.5" font-weight="600" fill="#4A729E">UNTOUCHED CALLERS</text>
 
-  <g transform="translate(814, 340)">
-    <rect width="190" height="54" rx="10" fill="var(--h-card)" stroke="#4A729E" stroke-width="1.5" stroke-dasharray="5 3" />
-    <text x="12" y="21" class="mono" font-size="11" font-weight="700" fill="var(--h-fg)">webhooks/stripe-hook.ts</text>
-    <text x="12" y="39" class="mono" font-size="10" fill="#4A729E">↳ untouched downstream caller</text>
-  </g>
+    <rect x="248" y="50" width="136" height="22" rx="11" fill="#F3F0E8" stroke="#CEC9BA" />
+    <text x="260" y="64.5" class="mono" font-size="9.5" font-weight="600" fill="#6B6860">MODIFIED IN PR</text>
 
-  <!-- Summary Colophon Box -->
-  <rect x="586" y="432" width="418" height="76" rx="10" fill="var(--h-card)" stroke="var(--h-border)" />
-  <text x="602" y="454" class="serif" font-size="14" font-weight="600" fill="var(--h-fg)">Zero API Keys · Zero Dependencies · 100% Local or Client-Side</text>
-  <text x="602" y="474" class="mono" font-size="11" fill="var(--h-muted)">CLI · Browser Studio (?pr=owner/repo/123) · GitHub Action</text>
-  <text x="602" y="493" class="mono" font-size="11" font-weight="600" fill="#D97757">Claude Code · Codex · Cursor · Antigravity · MCP</text>
+    <!-- Bezier Edges -->
+    <path d="M 206 108 C 226 108, 226 108, 244 108" fill="none" stroke="#C04438" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr-red)" />
+    <path d="M 206 178 C 228 178, 224 114, 244 114" fill="none" stroke="#C04438" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr-red)" />
+    <path d="M 206 248 C 228 248, 228 248, 244 248" fill="none" stroke="#4A729E" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr-blue)" />
+    <line x1="346" y1="132" x2="346" y2="152" stroke="#8E8A80" stroke-width="1.3" marker-end="url(#arr-dim)" />
+
+    <!-- Untouched Caller Cards -->
+    <g transform="translate(16, 84)">
+      <rect width="190" height="48" rx="10" fill="#FFFFFF" stroke="#C04438" stroke-width="1.35" stroke-dasharray="4 3" />
+      <text x="12" y="19" class="mono" font-size="10.5" font-weight="600" fill="#141413">routes/enterprise-sso.ts</text>
+      <text x="12" y="35" class="mono" font-size="9.5" fill="#C04438">calls broken signature</text>
+    </g>
+    <g transform="translate(16, 154)">
+      <rect width="190" height="48" rx="10" fill="#FFFFFF" stroke="#C04438" stroke-width="1.35" stroke-dasharray="4 3" />
+      <text x="12" y="19" class="mono" font-size="10.5" font-weight="600" fill="#141413">workers/renewal.ts</text>
+      <text x="12" y="35" class="mono" font-size="9.5" fill="#C04438">calls broken signature</text>
+    </g>
+    <g transform="translate(16, 224)">
+      <rect width="190" height="48" rx="10" fill="#FFFFFF" stroke="#4A729E" stroke-width="1.35" stroke-dasharray="4 3" />
+      <text x="12" y="19" class="mono" font-size="10.5" font-weight="600" fill="#141413">webhooks/stripe-hook.ts</text>
+      <text x="12" y="35" class="mono" font-size="9.5" fill="#4A729E">untouched downstream caller</text>
+    </g>
+
+    <!-- Modified Cards -->
+    <g transform="translate(248, 84)">
+      <rect x="-3" y="-3" width="202" height="54" rx="13" fill="none" stroke="#D97757" stroke-opacity="0.45" stroke-width="2" />
+      <rect width="196" height="48" rx="10" fill="#FFFFFF" stroke="#C04438" stroke-width="1.4" />
+      <text x="12" y="19" class="mono" font-size="10.5" font-weight="600" fill="#141413">src/auth/session.ts</text>
+      <text x="12" y="35" class="mono" font-size="9.5" fill="#6B6860">+8/-4 · core · impact 73</text>
+    </g>
+    <g transform="translate(248, 156)">
+      <rect width="196" height="48" rx="10" fill="#FFFFFF" stroke="#D97757" stroke-width="1.35" />
+      <text x="12" y="19" class="mono" font-size="10.5" font-weight="600" fill="#141413">src/services/invoice.ts</text>
+      <text x="12" y="35" class="mono" font-size="9.5" fill="#6B6860">+22/-0 · moved + delta</text>
+    </g>
+    <g transform="translate(248, 224)">
+      <rect width="196" height="48" rx="10" fill="#FFFFFF" stroke="#4E7A55" stroke-width="1.35" />
+      <text x="12" y="19" class="mono" font-size="10.5" font-weight="600" fill="#141413">api/checkout-controller.ts</text>
+      <text x="12" y="35" class="mono" font-size="9.5" fill="#6B6860">+1/-2 · entrypoint · impact 35</text>
+    </g>
+
+    <!-- Bottom Legend Pill -->
+    <rect x="14" y="352" width="346" height="26" rx="13" fill="#FFFFFF" stroke="#E5E1D6" />
+    <text x="28" y="369" class="mono" font-size="9.5" fill="#4E7A55">● Changed</text>
+    <text x="102" y="369" class="mono" font-size="9.5" fill="#D97757">● High Impact</text>
+    <text x="196" y="369" class="mono" font-size="9.5" fill="#4A729E">◌ Caller</text>
+    <text x="260" y="369" class="mono" font-size="9.5" fill="#C04438">● Signature Break</text>
+  </g>
 </svg>

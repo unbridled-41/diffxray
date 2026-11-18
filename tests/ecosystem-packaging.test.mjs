@@ -20,6 +20,8 @@ test("Multi-agent skill, Claude/Codex plugins, MCP manifest, and bilingual docs 
     "docs/media/logo-light.svg",
     "docs/media/hero-demo.svg",
     "docs/media/sample-card.svg",
+    "docs/media/showcase-overview.png",
+    "docs/media/showcase-blast-radius.png",
   ]) {
     assert.ok(existsSync(new URL(`../${p}`, import.meta.url)), `Missing required launch asset: ${p}`);
   }
