@@ -1018,7 +1018,7 @@ export function renderHtmlStudio(report, options = {}) {
   const lanePositions = new Map();
 
   function formatGraphPath(p, maxLen = 30) {
-    const clean = String(p || "").replace(/\\/g, "/");
+    const clean = String(p || "").replaceAll("\\\\", "/");
     if (clean.length <= maxLen) return clean;
     const parts = clean.split("/");
     if (parts.length >= 2) {
