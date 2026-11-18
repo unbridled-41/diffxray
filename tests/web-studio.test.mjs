@@ -31,6 +31,6 @@ test("Web Studio presets analyze accurately and static site builder outputs comp
   assert.ok(existsSync(new URL("../site/dist/.nojekyll", import.meta.url)));
   assert.ok(existsSync(new URL("../site/dist/src/index.mjs", import.meta.url)));
   assert.ok(
-    readFileSync(new URL("../site/dist/index.html", import.meta.url), "utf8").includes("DiffXray Studio")
+    readFileSync(new URL("../site/dist/index.html", import.meta.url), "utf8").includes("DiffXray Interactive Studio")
   );
 });

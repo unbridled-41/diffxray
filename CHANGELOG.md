@@ -2,6 +2,13 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.0.0] - 2026-11-18
+
+### Editorial Design System & Full Showcase Website
+- **Claude / Anthropic-Inspired Editorial Visual Identity**: Warm archival cream paper (`#FAF9F5`) default light mode + warm espresso (`#191816`) dark mode, literary serif headings (`Newsreader` / `Georgia`), burnt terracotta (`#D97757`), muted sage (`#4E7A55`), slate-blue (`#4A729E`), and archival brick (`#C04438`).
+- **Flagship Showcase Website (`site/index.html`)**: Full editorial storytelling experience featuring live `EN / 中文` bilingual switching, 5-tab quick-install command card, framed expandable Interactive Workbench with synchronized `postMessage` theme switching, 3-column architectural bento essay, interactive 12-rule filterable catalog, and comparison matrix.
+- **Upgraded Studio & Vector Assets**: Redesigned `html-studio.mjs` (with locked Split-Diff row alignment), `svg-card.mjs`, `hero-demo.svg`, `sample-card.svg`, and `logo-*.svg`.
+
 ## [1.2.0] - 2026-11-18
 
 ### Fixed & Improved (Live Browser QA Driven)

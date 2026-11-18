@@ -11,12 +11,12 @@
 
 **[English](README.md)** · **简体中文** · **[在线体验 Live Studio（免安装）→](https://unbridled-41.github.io/diffxray/)** · **[架构文档](docs/ARCHITECTURE.md)**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/unbridled-41/diffxray/ci.yml?branch=main&style=flat-square&label=tests)](https://github.com/unbridled-41/diffxray/actions/workflows/ci.yml)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-10b981?style=flat-square)](#零依赖与隐私安全架构)
-[![Node >=20](https://img.shields.io/badge/node-%E2%89%A520-1e293b?style=flat-square&logo=nodedotjs)](https://nodejs.org)
-[![Agent Skills](https://img.shields.io/badge/skills.sh-compatible-1e293b?style=flat-square)](https://skills.sh)
-[![MCP Server](https://img.shields.io/badge/MCP-stdio%20server-6366f1?style=flat-square)](#mcp-服务接入claude--cursor--codex)
-[![License: MIT](https://img.shields.io/badge/license-MIT-1e293b?style=flat-square)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/unbridled-41/diffxray/ci.yml?branch=main&style=flat-square&label=tests&color=4E7A55)](https://github.com/unbridled-41/diffxray/actions/workflows/ci.yml)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-D97757?style=flat-square)](#零依赖与隐私安全架构)
+[![Node >=20](https://img.shields.io/badge/node-%E2%89%A520-262521?style=flat-square&logo=nodedotjs)](https://nodejs.org)
+[![Agent Skills](https://img.shields.io/badge/skills.sh-compatible-262521?style=flat-square)](https://skills.sh)
+[![MCP Server](https://img.shields.io/badge/MCP-stdio%20server-4A729E?style=flat-square)](#mcp-服务接入claude--cursor--codex)
+[![License: MIT](https://img.shields.io/badge/license-MIT-262521?style=flat-square)](LICENSE)
 
 </div>
 

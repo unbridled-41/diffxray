@@ -115,7 +115,7 @@ export function analyzeRisks(parsedDiff, moveReport, symbolReport, blastRadius, 
     }
 
     const isTest = file.layer === "test";
-    const isDocs = file.layer === "docs";
+    const isDocs = file.layer === "docs" || /\.svg$/i.test(file.path);
     if (isDocs) continue;
 
     // Check manifest dependency changes

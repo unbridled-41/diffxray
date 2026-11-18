@@ -1,162 +1,536 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DiffXray Live Studio — X-Ray Any GitHub PR or Git Diff in Your Browser</title>
-  <meta name="description" content="Zero-install, 100% client-side visual Git diff & Pull Request X-Ray: Blast-Radius graph, cross-file move collapsing, guided reading tour & silent AI-bug radar." />
+  <title>DiffXray — Read what changed. See what quietly broke.</title>
+  <meta name="description" content="Zero-dependency Git diff & Pull Request X-Ray for humans and coding agents: untouched downstream blast-radius map, cross-file move collapsing, and 12 deterministic silent-bug checks." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
   <style>
-    :root, [data-theme="dark"] {
-      --bg: #090b10;
-      --elev: #10141d;
-      --card: #151a25;
-      --hover: #1c2332;
-      --border: #232b3b;
-      --fg: #eef2f6;
-      --muted: #94a3b8;
-      --accent: #10b981;
-      --accent-soft: rgba(16, 185, 129, 0.14);
-      --danger: #ef4444;
+    :root, html[data-theme="light"] {
+      --bg: #FAF9F5;
+      --bg-warm: #F3F0E8;
+      --bg-card: #FFFFFF;
+      --bg-hover: #EAE5D9;
+      --border: #E5E1D6;
+      --border-strong: #CFCAC0;
+      --fg: #141413;
+      --fg-muted: #5F5C54;
+      --fg-dim: #8F8B80;
+      --accent: #D97757;
+      --accent-hover: #C46344;
+      --accent-soft: rgba(217, 119, 87, 0.12);
+      --sage: #4E7A55;
+      --sage-soft: rgba(78, 122, 85, 0.11);
+      --blue: #4A729E;
+      --blue-soft: rgba(74, 114, 158, 0.11);
+      --danger: #C04438;
+      --danger-soft: rgba(192, 68, 56, 0.10);
+      --ochre: #B57B2E;
+      --ochre-soft: rgba(181, 123, 46, 0.11);
+      --nav-glass: rgba(250, 249, 245, 0.86);
+      --shadow-sm: 0 2px 8px rgba(20, 20, 19, 0.035);
+      --shadow-lg: 0 24px 64px rgba(20, 20, 19, 0.075);
     }
+    html[data-theme="dark"] {
+      --bg: #191816;
+      --bg-warm: #21201D;
+      --bg-card: #262521;
+      --bg-hover: #312F2A;
+      --border: #35332E;
+      --border-strong: #4A4740;
+      --fg: #F4F1EA;
+      --fg-muted: #A9A59B;
+      --fg-dim: #78746A;
+      --accent: #D97757;
+      --accent-hover: #E38668;
+      --accent-soft: rgba(217, 119, 87, 0.16);
+      --sage: #6E9E75;
+      --sage-soft: rgba(110, 158, 117, 0.15);
+      --blue: #78A1CC;
+      --blue-soft: rgba(120, 161, 204, 0.15);
+      --danger: #DF685C;
+      --danger-soft: rgba(223, 104, 92, 0.15);
+      --ochre: #D89B48;
+      --ochre-soft: rgba(216, 155, 72, 0.15);
+      --nav-glass: rgba(25, 24, 22, 0.86);
+      --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 28px 72px rgba(0, 0, 0, 0.45);
+    }
+
     * { box-sizing: border-box; }
-    html, body {
+    html { scroll-behavior: smooth; }
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
       background: var(--bg);
       color: var(--fg);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .serif {
+      font-family: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, "Songti SC", "Noto Serif SC", serif;
+    }
+    code, pre, input, textarea, .mono {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Sticky Editorial Navigation */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: var(--nav-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 13px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .brand-emblem {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
       font-size: 13.5px;
+      color: var(--fg-muted);
     }
-    code, input, textarea, .mono {
-      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    .nav-links a:hover { color: var(--fg); }
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
     }
-    .shell {
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-btn {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--fg);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pill-btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+    .pill-btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #FAF9F5;
+      font-weight: 550;
+    }
+    .pill-btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    /* Editorial Hero Section */
+    .hero {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 68px 24px 44px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: var(--bg-warm);
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .hero h1 {
+      margin: 0 auto 20px;
+      font-size: clamp(36px, 5.2vw, 60px);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.028em;
+      max-width: 900px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .hero-sub {
+      margin: 0 auto 34px;
+      max-width: 680px;
+      font-size: 17.5px;
+      line-height: 1.62;
+      color: var(--fg-muted);
+    }
+
+    /* Interactive 5-Tab Command Card */
+    .cmd-showcase {
+      max-width: 680px;
+      margin: 0 auto 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      text-align: left;
+    }
+    .cmd-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 6px 8px;
+      background: var(--bg-warm);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .cmd-tab {
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--fg-muted);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .cmd-tab.active {
+      background: var(--bg-card);
+      color: var(--fg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+    .cmd-body {
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .cmd-code {
+      font-size: 13px;
+      color: var(--fg);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .cmd-prefix { color: var(--accent); user-select: none; margin-right: 8px; }
+
+    /* Workbench Section */
+    .workbench-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 8px 24px 76px;
+    }
+    .workbench-Wrap-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      max-width: none;
+      padding: 0;
+      background: var(--bg);
       display: flex;
       flex-direction: column;
-      height: 100vh;
     }
-    .launcher-bar {
-      background: var(--elev);
+    .workbench-frame {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 18px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .workbench-Wrap-fullscreen .workbench-frame {
+      border-radius: 0;
+      border: none;
+      flex: 1;
+    }
+    .wb-control-bar {
+      background: var(--bg-warm);
       border-bottom: 1px solid var(--border);
-      padding: 10px 18px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 14.5px;
-      color: var(--fg);
-      text-decoration: none;
-    }
-    .brand-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent);
-      display: grid;
-      place-items: center;
-      color: var(--accent);
-      font-size: 12px;
-    }
     .pr-form {
       display: flex;
       flex: 1;
-      max-width: 620px;
-      gap: 6px;
-      min-width: 260px;
+      min-width: 280px;
+      max-width: 640px;
+      gap: 8px;
     }
     .pr-input {
       flex: 1;
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       color: var(--fg);
-      padding: 6px 11px;
-      border-radius: 6px;
+      padding: 7px 14px;
+      border-radius: 999px;
       font-size: 12.5px;
     }
     .pr-input:focus { outline: none; border-color: var(--accent); }
-    .btn {
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--fg);
-      padding: 6px 11px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-    .btn:hover { background: var(--hover); }
-    .btn-primary {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .preset-strip {
+    .wb-preset-bar {
       background: var(--bg);
       border-bottom: 1px solid var(--border);
-      padding: 6px 18px;
+      padding: 8px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
       font-size: 12px;
     }
-    .preset-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .preset-pills { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
     .preset-btn {
       cursor: pointer;
-      background: var(--card);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 3px 9px;
-      border-radius: 5px;
+      color: var(--fg-muted);
+      padding: 4px 11px;
+      border-radius: 999px;
       font-size: 11.5px;
+      transition: all 0.14s;
     }
-    .preset-btn.active, .preset-btn:hover {
-      color: var(--fg);
-      border-color: var(--accent);
+    .preset-btn:hover { border-color: var(--border-strong); color: var(--fg); }
+    .preset-btn.active {
       background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
     }
-    .status-msg { color: var(--muted); font-size: 11.5px; }
+    .status-msg { color: var(--fg-dim); font-size: 11.5px; }
     .status-err { color: var(--danger); }
     iframe#studio-frame {
-      flex: 1;
       width: 100%;
+      height: 760px;
       border: none;
       background: var(--bg);
+    }
+    .workbench-Wrap-fullscreen iframe#studio-frame {
+      flex: 1;
+      height: auto;
+    }
+
+    /* Editorial Sections */
+    .section {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 72px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .section-header {
+      max-width: 680px;
+      margin-bottom: 44px;
+    }
+    .section-kicker {
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .section-header h2 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 3.6vw, 40px);
+      font-weight: 500;
+      line-height: 1.15;
+      letter-spacing: -0.022em;
+    }
+    .section-header p {
+      margin: 0;
+      color: var(--fg-muted);
+      font-size: 16px;
+    }
+
+    /* 3-Column Research Bento */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 20px;
+    }
+    .bento-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .bento-num {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .bento-card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+    }
+    .bento-card p {
+      margin: 0 0 20px;
+      color: var(--fg-muted);
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+    .bento-diagram {
+      background: var(--bg-warm);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 11.5px;
+    }
+
+    /* 12 Hazards Catalog Grid */
+    .rules-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+      gap: 14px;
+    }
+    .rule-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .sev-chip {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .sev-critical { background: var(--danger-soft); color: var(--danger); }
+    .sev-high { background: var(--accent-soft); color: var(--accent); }
+    .sev-medium { background: var(--ochre-soft); color: var(--ochre); }
+    .sev-low { background: var(--bg-warm); color: var(--fg-muted); }
+
+    /* Archival Comparison Table */
+    .compare-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .compare-table th, .compare-table td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-table th {
+      background: var(--bg-warm);
+      font-weight: 600;
+      font-size: 12.5px;
+      color: var(--fg-muted);
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .col-highlight {
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg-warm);
+      padding: 44px 24px;
+    }
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--fg-muted);
     }
 
     /* Paste Diff Modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.68);
+      background: rgba(20, 20, 19, 0.55);
+      backdrop-filter: blur(4px);
       display: none;
       place-items: center;
-      z-index: 100;
+      z-index: 300;
       padding: 20px;
     }
     .modal-backdrop.open { display: grid; }
     .modal {
-      background: var(--elev);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 18px;
       width: 100%;
       max-width: 720px;
-      padding: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
     }
     .diff-paste-area {
       width: 100%;
@@ -164,66 +538,290 @@
       background: var(--bg);
       color: var(--fg);
       border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 10px;
+      border-radius: 12px;
+      padding: 12px;
       font-size: 12px;
-      margin: 10px 0 14px;
+      margin: 12px 0 16px;
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="launcher-bar">
-      <a class="brand" href="https://github.com/unbridled-41/diffxray" target="_blank" rel="noopener">
-        <span class="brand-dot">◉</span>
-        <span>DiffXray Studio</span>
+
+  <!-- Top Editorial Navigation -->
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand serif" href="#">
+        <span class="brand-emblem" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="2.4" fill="currentColor"/>
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.35" stroke-dasharray="2.5 2"/>
+          </svg>
+        </span>
+        <span>DiffXray</span>
       </a>
 
-      <form class="pr-form" id="pr-form">
-        <input
-          type="text"
-          id="pr-input"
-          class="pr-input mono"
-          placeholder="Paste any public GitHub PR URL or owner/repo#123…"
-          aria-label="GitHub Pull Request URL"
-        />
-        <button type="submit" class="btn btn-primary" id="pr-submit">X-Ray PR →</button>
-      </form>
+      <nav class="nav-links">
+        <a href="#workbench" data-i18n="nav_workbench">Live Workbench</a>
+        <a href="#why" data-i18n="nav_why">Why Diffs Fail</a>
+        <a href="#hazards" data-i18n="nav_hazards">12 Silent Hazards</a>
+        <a href="#ecosystem" data-i18n="nav_ecosystem">Comparison &amp; Agents</a>
+        <a href="https://github.com/unbridled-41/diffxray/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" data-i18n="nav_arch">Architecture</a>
+      </nav>
 
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <button class="btn" id="open-paste-btn">Paste / Drop .diff</button>
-        <button class="btn" id="share-link-btn" title="Copy deep link to current PR X-Ray">Share Link</button>
-        <a class="btn btn-primary" href="https://github.com/unbridled-41/diffxray" target="_blank" rel="noopener">★ Star on GitHub</a>
+      <div class="nav-actions">
+        <button class="pill-btn mono" id="lang-btn" title="Switch English / 中文">中文</button>
+        <button class="pill-btn" id="theme-btn" title="Switch Paper Light / Espresso Dark">☾ Dusk</button>
+        <a class="pill-btn pill-btn-primary" href="https://github.com/unbridled-41/diffxray" target="_blank" rel="noopener">★ GitHub</a>
       </div>
     </div>
+  </header>
 
-    <div class="preset-strip">
-      <div class="preset-pills">
-        <span style="color:var(--muted);font-weight:600">Try Instant X-Ray:</span>
-        <button class="preset-btn active" data-preset="vibe-auth">1. Vibe-Coded Auth PR (5 Silent Bugs)</button>
-        <button class="preset-btn" data-preset="clean-refactor">2. Clean Module Split (76% Moved)</button>
-        <button class="preset-btn" data-live-pr="unbridled-41/diffxray#12">3. Live GitHub Fetch: diffxray#12</button>
-      </div>
-      <div id="status-bar" class="status-msg mono">100% client-side · zero telemetry · npx github:unbridled-41/diffxray</div>
+  <!-- Editorial Hero -->
+  <section class="hero">
+    <div class="eyebrow mono">
+      <span class="eyebrow-dot"></span>
+      <span data-i18n="hero_eyebrow">DiffXray v2.0 · Zero Runtime Dependencies · MIT Open Source</span>
     </div>
 
-    <iframe id="studio-frame" title="DiffXray Interactive Studio"></iframe>
-  </div>
+    <h1 class="serif" id="hero-heading">
+      GitHub diffs list files alphabetically.<br />
+      <em>See what quietly broke downstream.</em>
+    </h1>
+
+    <p class="hero-sub" data-i18n="hero_sub">
+      Coding agents now generate 30-file pull requests in minutes with green exit-0 tests. DiffXray maps untouched callers in the blast radius, collapses moved blocks, and audits 12 silent failure modes—locally via CLI or 100% client-side right below.
+    </p>
+
+    <!-- 5-Surface Quick Install Card -->
+    <div class="cmd-showcase">
+      <div class="cmd-tabs" role="tablist">
+        <button class="cmd-tab active" data-cmd="npx github:unbridled-41/diffxray --html --open">CLI (Zero Install)</button>
+        <button class="cmd-tab" data-cmd="npx skills add unbridled-41/diffxray">Agent Skill (75+)</button>
+        <button class="cmd-tab" data-cmd="claude plugin install diffxray --marketplace unbridled-41/diffxray">Claude Code</button>
+        <button class="cmd-tab" data-cmd="uses: unbridled-41/diffxray@main">GitHub Action</button>
+        <button class="cmd-tab" data-cmd="npx -y github:unbridled-41/diffxray --mcp">MCP Server</button>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-code mono">
+          <span class="cmd-prefix">$</span><span id="active-cmd-text">npx github:unbridled-41/diffxray --html --open</span>
+        </div>
+        <button class="pill-btn pill-btn-primary" id="copy-cmd-btn" data-i18n="btn_copy">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Framed Interactive Workbench -->
+  <section class="workbench-wrap" id="workbench">
+    <div class="workbench-frame">
+      <div class="wb-control-bar">
+        <form class="pr-form" id="pr-form">
+          <input
+            type="text"
+            id="pr-input"
+            class="pr-input mono"
+            placeholder="Paste any public GitHub PR or Commit URL (e.g. owner/repo#123)…"
+            aria-label="GitHub Pull Request or Commit URL"
+          />
+          <button type="submit" class="pill-btn pill-btn-primary" id="pr-submit" data-i18n="btn_xray">X-Ray PR →</button>
+        </form>
+
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <button class="pill-btn" id="open-paste-btn" data-i18n="btn_paste">Paste / Drop .diff</button>
+          <button class="pill-btn" id="share-link-btn" data-i18n="btn_share">Share Link</button>
+          <button class="pill-btn" id="fullscreen-btn" title="Toggle Fullscreen Workbench">⤢ Expand</button>
+        </div>
+      </div>
+
+      <div class="wb-preset-bar">
+        <div class="preset-pills">
+          <span style="color:var(--fg-muted);font-weight:600" data-i18n="label_presets">Interactive Scenarios:</span>
+          <button class="preset-btn active" data-preset="vibe-auth">01 · Vibe-Coded Auth PR (5 Silent Bugs)</button>
+          <button class="preset-btn" data-preset="clean-refactor">02 · Clean Module Split (76% Motion Collapsed)</button>
+          <button class="preset-btn" data-live-pr="unbridled-41/diffxray#13">03 · Live GitHub Fetch: diffxray#13</button>
+        </div>
+        <div id="status-bar" class="status-msg mono">100% client-side ESM · zero bytes leave your browser</div>
+      </div>
+
+      <iframe id="studio-frame" title="DiffXray Interactive Studio"></iframe>
+    </div>
+  </section>
+
+  <!-- Section: Three Blind Spots -->
+  <section class="section" id="why">
+    <div class="section-header">
+      <div class="section-kicker mono" data-i18n="why_kicker">The Verification Bottleneck</div>
+      <h2 class="serif" data-i18n="why_title">Three blind spots traditional diff viewers were never built to show.</h2>
+      <p data-i18n="why_sub">
+        Line-by-line alphabetical diffs worked when humans typed 80 lines a day. When an autonomous agent touches 28 files in 90 seconds, reviewers need structural truth—not red and green wallpaper.
+      </p>
+    </div>
+
+    <div class="bento-grid">
+      <article class="bento-card">
+        <div>
+          <div class="bento-num mono">01 / BLAST RADIUS</div>
+          <h3 class="serif" data-i18n="b1_title">Untouched downstream callers</h3>
+          <p data-i18n="b1_desc">
+            When verifySessionToken(token) adds a required orgId parameter, GitHub shows session.ts—never the three untouched routes and cron workers that still invoke it with one argument.
+          </p>
+        </div>
+        <div class="bento-diagram mono">
+          <div style="color:var(--danger);font-weight:600">session.ts · arity 1 → 2</div>
+          <div style="color:var(--blue);margin-top:6px">↳ routes/enterprise-sso.ts (untouched!)</div>
+          <div style="color:var(--blue)">↳ workers/renewal.ts (untouched!)</div>
+        </div>
+      </article>
+
+      <article class="bento-card">
+        <div>
+          <div class="bento-num mono">02 / CODE MOTION</div>
+          <h3 class="serif" data-i18n="b2_title">Shingle Jaccard move pairing</h3>
+          <p data-i18n="b2_desc">
+            Extracting a 120-line billing helper into a new file while tweaking one discount constant looks like 240 lines of churn. DiffXray collapses pure motion and spotlights only the edited line.
+          </p>
+        </div>
+        <div class="bento-diagram mono">
+          <div style="color:var(--accent);font-weight:600">⇄ 118 lines moved (94% match · collapsed)</div>
+          <div style="color:var(--sage);margin-top:6px">+ const tierDiscount = subtotal * 0.12;</div>
+        </div>
+      </article>
+
+      <article class="bento-card">
+        <div>
+          <div class="bento-num mono">03 / QUIETLY WRONG</div>
+          <h3 class="serif" data-i18n="b3_title">Deterministic exit-0 hazard audit</h3>
+          <p data-i18n="b3_desc">
+            Agents routinely make red tests turn green by skipping suites, deleting assertions, swallowing exceptions in empty handlers, dropping await keywords, or removing auth middleware.
+          </p>
+        </div>
+        <div class="bento-diagram mono">
+          <div style="color:var(--danger);font-weight:600">[CRITICAL] auth-guard-removed</div>
+          <div style="color:var(--fg-muted);margin-top:6px">Caught our own MCP -32700 bug on PR #13</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Section: 12 Deterministic Rules -->
+  <section class="section" id="hazards">
+    <div class="section-header">
+      <div class="section-kicker mono" data-i18n="haz_kicker">Deterministic Static &amp; Graph Heuristics</div>
+      <h2 class="serif" data-i18n="haz_title">Twelve silent hazards audited in under 50 milliseconds.</h2>
+      <p data-i18n="haz_sub">
+        Zero LLM API keys, zero prompt flakiness, and full OASIS SARIF v2.1.0 export for GitHub Code Scanning.
+      </p>
+    </div>
+
+    <div class="rules-filter" id="catalog-filters">
+      <button class="pill-btn pill-btn-primary" data-rsev="all">All 12 Rules</button>
+      <button class="pill-btn" data-rsev="critical">Critical (3)</button>
+      <button class="pill-btn" data-rsev="high">High (4)</button>
+      <button class="pill-btn" data-rsev="medium">Medium (3)</button>
+      <button class="pill-btn" data-rsev="low">Low (2)</button>
+    </div>
+
+    <div class="rules-grid" id="rules-catalog"></div>
+  </section>
+
+  <!-- Section: Comparison & Multi-Agent Ecosystem -->
+  <section class="section" id="ecosystem">
+    <div class="section-header">
+      <div class="section-kicker mono" data-i18n="eco_kicker">Built for Humans &amp; Agents</div>
+      <h2 class="serif" data-i18n="eco_title">One isomorphic engine across CLI, Browser, CI, MCP, and Skills.</h2>
+      <p data-i18n="eco_sub">
+        Enforced by automated CI checks on Ubuntu, macOS, and Windows: zero third-party node_modules and zero telemetry.
+      </p>
+    </div>
+
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>GitHub PR Diff UI</th>
+            <th>Cloud PR Bots ($15–30/mo)</th>
+            <th>Static Repo Maps</th>
+            <th class="col-highlight">DiffXray v2.0</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>License &amp; Cost</strong></td>
+            <td>Free</td>
+            <td>Paid per seat</td>
+            <td>MIT</td>
+            <td class="col-highlight">Free · MIT</td>
+          </tr>
+          <tr>
+            <td><strong>Works on uncommitted local edits</strong></td>
+            <td>No</td>
+            <td>No (requires pushed PR)</td>
+            <td>Static files only</td>
+            <td class="col-highlight">Yes (&lt; 1.5s locally)</td>
+          </tr>
+          <tr>
+            <td><strong>Untouched downstream caller Blast Radius</strong></td>
+            <td>Hidden</td>
+            <td>Partial text notes</td>
+            <td>Whole-repo static</td>
+            <td class="col-highlight">Interactive swimlane graph</td>
+          </tr>
+          <tr>
+            <td><strong>Cross-file moved code collapsing + delta</strong></td>
+            <td>Whole-file rename only</td>
+            <td>No</td>
+            <td>N/A</td>
+            <td class="col-highlight">Shingle Jaccard + delta highlight</td>
+          </tr>
+          <tr>
+            <td><strong>Zero API keys &amp; 100% local privacy</strong></td>
+            <td>N/A</td>
+            <td>Uploads diff to cloud LLMs</td>
+            <td>Requires LLM session</td>
+            <td class="col-highlight">100% deterministic &amp; offline-ready</td>
+          </tr>
+          <tr>
+            <td><strong>Runtime npm dependencies</strong></td>
+            <td>N/A</td>
+            <td>Heavy</td>
+            <td>0</td>
+            <td class="col-highlight">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Editorial Colophon Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <span class="serif" style="font-size:18px;font-weight:600;color:var(--fg)">DiffXray</span>
+        <span style="margin-left:10px">MIT License · Zero-dependency diff intelligence for humans &amp; coding agents.</span>
+      </div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap" class="mono">
+        <a href="https://github.com/unbridled-41/diffxray" target="_blank" rel="noopener">GitHub Repo</a>
+        <a href="https://github.com/unbridled-41/diffxray/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="./llms.txt" target="_blank" rel="noopener">llms.txt</a>
+        <a href="https://github.com/unbridled-41/diffxray/blob/main/README.zh-CN.md" target="_blank" rel="noopener">简体中文文档</a>
+      </div>
+    </div>
+  </footer>
 
   <!-- Paste / Drop Local Diff Modal -->
   <div class="modal-backdrop" id="paste-modal">
     <div class="modal">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">Paste `git diff` or Drop a `.diff` / `.patch` File</h3>
-        <button class="btn" id="close-paste-btn">Close</button>
+        <h3 class="serif" style="margin:0;font-size:22px">Paste git diff or Drop a .diff / .patch File</h3>
+        <button class="pill-btn" id="close-paste-btn">Close</button>
       </div>
-      <p style="color:var(--muted);margin:6px 0 0;font-size:12.5px">
-        Processed 100% locally inside your browser tab — zero bytes leave your device.
+      <p style="color:var(--fg-muted);margin:6px 0 0;font-size:13.5px">
+        Parsed 100% locally inside your browser memory—zero bytes ever leave your machine.
       </p>
       <textarea id="raw-diff-input" class="diff-paste-area mono" placeholder="diff --git a/src/app.ts b/src/app.ts&#10;--- a/src/app.ts&#10;+++ b/src/app.ts&#10;@@ ..."></textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
         <input type="file" id="diff-file-picker" accept=".diff,.patch,.txt" />
-        <button class="btn btn-primary" id="run-pasted-diff">X-Ray Pasted Diff →</button>
+        <button class="pill-btn pill-btn-primary" id="run-pasted-diff">X-Ray Pasted Diff →</button>
       </div>
     </div>
   </div>
@@ -235,6 +833,168 @@
     const frame = document.getElementById("studio-frame");
     const statusEl = document.getElementById("status-bar");
     const prInput = document.getElementById("pr-input");
+    const themeBtn = document.getElementById("theme-btn");
+    const langBtn = document.getElementById("lang-btn");
+
+    let currentTheme = "light";
+    let currentLang = "en";
+    let lastReport = null;
+
+    const I18N = {
+      en: {
+        nav_workbench: "Live Workbench",
+        nav_why: "Why Diffs Fail",
+        nav_hazards: "12 Silent Hazards",
+        nav_ecosystem: "Comparison & Agents",
+        nav_arch: "Architecture",
+        hero_eyebrow: "DiffXray v2.0 · Zero Runtime Dependencies · MIT Open Source",
+        hero_html: `GitHub diffs list files alphabetically.<br /><em>See what quietly broke downstream.</em>`,
+        hero_sub: "Coding agents now generate 30-file pull requests in minutes with green exit-0 tests. DiffXray maps untouched callers in the blast radius, collapses moved blocks, and audits 12 silent failure modes—locally via CLI or 100% client-side right below.",
+        btn_copy: "Copy",
+        btn_xray: "X-Ray PR →",
+        btn_paste: "Paste / Drop .diff",
+        btn_share: "Share Link",
+        label_presets: "Interactive Scenarios:",
+        why_kicker: "The Verification Bottleneck",
+        why_title: "Three blind spots traditional diff viewers were never built to show.",
+        why_sub: "Line-by-line alphabetical diffs worked when humans typed 80 lines a day. When an autonomous agent touches 28 files in 90 seconds, reviewers need structural truth—not red and green wallpaper.",
+        b1_title: "Untouched downstream callers",
+        b1_desc: "When verifySessionToken(token) adds a required orgId parameter, GitHub shows session.ts—never the three untouched routes and cron workers that still invoke it with one argument.",
+        b2_title: "Shingle Jaccard move pairing",
+        b2_desc: "Extracting a 120-line billing helper into a new file while tweaking one discount constant looks like 240 lines of churn. DiffXray collapses pure motion and spotlights only the edited line.",
+        b3_title: "Deterministic exit-0 hazard audit",
+        b3_desc: "Agents routinely make red tests turn green by skipping suites, deleting assertions, swallowing exceptions in empty handlers, dropping await keywords, or removing auth middleware.",
+        haz_kicker: "Deterministic Static & Graph Heuristics",
+        haz_title: "Twelve silent hazards audited in under 50 milliseconds.",
+        haz_sub: "Zero LLM API keys, zero prompt flakiness, and full OASIS SARIF v2.1.0 export for GitHub Code Scanning.",
+        eco_kicker: "Built for Humans & Agents",
+        eco_title: "One isomorphic engine across CLI, Browser, CI, MCP, and Skills.",
+        eco_sub: "Enforced by automated CI checks on Ubuntu, macOS, and Windows: zero third-party node_modules and zero telemetry.",
+      },
+      zh: {
+        nav_workbench: "在线透视工作台",
+        nav_why: "传统 Diff 的盲区",
+        nav_hazards: "12 项静默隐患",
+        nav_ecosystem: "横向对比与智能体",
+        nav_arch: "系统架构",
+        hero_eyebrow: "DiffXray v2.0 · 零运行时外部依赖 · MIT 开源协议",
+        hero_html: `告别按字母堆砌的代码变更，<br /><em>一眼看穿悄然波及的下游与隐患。</em>`,
+        hero_sub: "编码智能体几分钟即可生成跨越 30 个文件且单测全绿（exit 0）的大型 PR。DiffXray 自动扫描未修改却受波及的下游爆炸半径、折叠跨文件纯搬运代码，并在毫秒间审计 12 类静默缺陷——支持本地 CLI 或直接在下方纯前端体验。",
+        btn_copy: "复制命令",
+        btn_xray: "立即透视 →",
+        btn_paste: "粘贴 / 拖入 .diff",
+        btn_share: "分享链接",
+        label_presets: "一键切换交互示例：",
+        why_kicker: "AI 时代的代码审查瓶颈",
+        why_title: "传统按字母排序的 Diff 视图，天然隐藏了三件最致命的事。",
+        why_sub: "人类手写几十行代码时，逐行看红绿对比就够了；当智能体 90 秒重构 28 个文件时，审阅者需要的是调用链结构真相。",
+        b1_title: "未被修改却受波及的下游调用方",
+        b1_desc: "当导出函数的必填参数从 1 个变成 2 个，GitHub 只展示被改的文件，绝不会提醒你仓库里还有 3 个没出现在 Diff 里的路由仍在传 1 个参数。",
+        b2_title: "跨文件搬运折叠与行内微调聚光",
+        b2_desc: "抽离 120 行函数到新文件并顺手改了 1 个折扣系数，在 Git 里是 240 行红绿刷屏。DiffXray 自动折叠纯移动块，精准高亮被改的那一行。",
+        b3_title: "12 项确定性「静默错误」雷达",
+        b3_desc: "智能体常靠跳过测试、删断言、空异常分支吞报错、漏写异步等待或误删鉴权守卫让测试变绿。本工具自举时曾当场抓出自身的 MCP 漏洞。",
+        haz_kicker: "零幻觉确定性静态与图谱分析",
+        haz_title: "50 毫秒内完成 12 类高危静默缺陷审计。",
+        haz_sub: "无需任何大模型 API Key，代码 100% 本地处理，原生支持导出 OASIS SARIF v2.1.0 接入 GitHub 安全扫描。",
+        eco_kicker: "人机协同同构引擎",
+        eco_title: "同一套零依赖内核，贯通 CLI、浏览器、CI、MCP 与 75+ 智能体。",
+        eco_sub: "每次提交均经 Linux、macOS、Windows 六矩阵自动校验：零第三方 node_modules，零遥测上传。",
+      },
+    };
+
+    const RULES_DATA = [
+      { id: "secret-leak", sev: "critical", desc: "AWS, GitHub, OpenAI/Anthropic/Stripe keys, Slack tokens, private keys & DB URI passwords." },
+      { id: "injection-risk", sev: "critical", desc: "Interpolated SQL template/f-strings, eval/new Function, shell:true command execution & raw HTML sinks." },
+      { id: "auth-guard-removed", sev: "critical", desc: "Deleted authentication/permission middleware (requireAuth, verifyToken, @UseGuards) without replacement." },
+      { id: "breaking-signature", sev: "high", desc: "Exported function arity or async contract break cross-referenced against untouched callers." },
+      { id: "weakened-test", sev: "high", desc: "Skipped test suites or deleted test assertions without replacement checks." },
+      { id: "silent-catch", sev: "high", desc: "Newly added empty or comment-only exception handlers swallowing runtime failures." },
+      { id: "unawaited-async", sev: "high", desc: "Dropped await keywords before async calls inside modified hunks, creating race conditions." },
+      { id: "type-erosion", sev: "medium", desc: "Newly injected untyped casts, compiler suppressions, or Rust unsafe blocks." },
+      { id: "schema-drift", sev: "medium", desc: "Prisma, SQL, or ORM models modified without a corresponding database migration in the diff." },
+      { id: "untested-core", sev: "medium", desc: "30+ effective lines changed in core/API/data modules with zero test files touched." },
+      { id: "lockfile-drift", sev: "low", desc: "Manifest dependency sections modified without updating the corresponding lockfile." },
+      { id: "debug-leftover", sev: "low", desc: "Leftover interactive breakpoints or debug print statements in production modules." },
+    ];
+
+    function renderRulesCatalog(filter = "all") {
+      const grid = document.getElementById("rules-catalog");
+      const list = filter === "all" ? RULES_DATA : RULES_DATA.filter((r) => r.sev === filter);
+      grid.innerHTML = list
+        .map(
+          (r) => `
+          <div class="rule-item">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <code style="font-weight:600;font-size:12.5px">${r.id}</code>
+              <span class="sev-chip sev-${r.sev} mono">${r.sev}</span>
+            </div>
+            <div style="color:var(--fg-muted);font-size:13px;line-height:1.55">${r.desc}</div>
+          </div>`
+        )
+        .join("");
+    }
+    renderRulesCatalog("all");
+
+    document.querySelectorAll("[data-rsev]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-rsev]").forEach((b) => b.classList.toggle("pill-btn-primary", b === btn));
+        renderRulesCatalog(btn.dataset.rsev);
+      });
+    });
+
+    // Install Command Tabs
+    let activeCmd = "npx github:unbridled-41/diffxray --html --open";
+    document.querySelectorAll(".cmd-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".cmd-tab").forEach((t) => t.classList.toggle("active", t === tab));
+        activeCmd = tab.dataset.cmd;
+        document.getElementById("active-cmd-text").textContent = activeCmd;
+      });
+    });
+    document.getElementById("copy-cmd-btn").addEventListener("click", (e) => {
+      navigator.clipboard?.writeText(activeCmd);
+      const btn = e.currentTarget;
+      const prev = btn.textContent;
+      btn.textContent = currentLang === "zh" ? "已复制 ✓" : "Copied ✓";
+      setTimeout(() => { btn.textContent = prev; }, 1500);
+    });
+
+    // Theme Sync (Outer Website <-> Inner Studio Iframe)
+    function applyTheme(next) {
+      currentTheme = next;
+      document.documentElement.dataset.theme = next;
+      themeBtn.textContent = next === "light" ? "☾ Dusk" : "☀ Paper";
+      frame.contentWindow?.postMessage({ type: "diffxray-set-theme", theme: next }, "*");
+    }
+    themeBtn.addEventListener("click", () => applyTheme(currentTheme === "light" ? "dark" : "light"));
+    window.addEventListener("message", (ev) => {
+      if (ev.data && ev.data.type === "diffxray-theme" && (ev.data.theme === "light" || ev.data.theme === "dark")) {
+        currentTheme = ev.data.theme;
+        document.documentElement.dataset.theme = currentTheme;
+        themeBtn.textContent = currentTheme === "light" ? "☾ Dusk" : "☀ Paper";
+      }
+    });
+
+    // Language Switcher (EN <-> 中文)
+    langBtn.addEventListener("click", () => {
+      currentLang = currentLang === "en" ? "zh" : "en";
+      langBtn.textContent = currentLang === "en" ? "中文" : "EN";
+      const dict = I18N[currentLang];
+      document.getElementById("hero-heading").innerHTML = dict.hero_html;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.textContent = dict[key];
+      });
+    });
+
+    // Fullscreen Workbench Toggle
+    const wbWrap = document.getElementById("workbench");
+    const fsBtn = document.getElementById("fullscreen-btn");
+    fsBtn.addEventListener("click", () => {
+      const isFs = wbWrap.classList.toggle("workbench-Wrap-fullscreen");
+      fsBtn.textContent = isFs ? "✕ Exit Fullscreen" : "⤢ Expand";
+    });
 
     function setStatus(text, isErr = false) {
       statusEl.textContent = text;
@@ -242,8 +1002,14 @@
     }
 
     function mountReport(report) {
-      const html = renderHtmlStudio(report);
-      frame.srcdoc = html;
+      lastReport = report;
+      frame.srcdoc = renderHtmlStudio(report, { defaultTheme: currentTheme });
+    }
+
+    function clearActivePresets(exceptLiveValue = "") {
+      document.querySelectorAll(".preset-btn").forEach((b) => {
+        b.classList.toggle("active", Boolean(exceptLiveValue) && b.dataset.livePr === exceptLiveValue);
+      });
     }
 
     function loadPreset(key) {
@@ -257,13 +1023,7 @@
         workspaceFiles: p.workspaceFiles,
       });
       mountReport(report);
-      setStatus(`Loaded preset '${p.sourceLabel}' in ${report.meta.durationMs}ms · 100% client-side`);
-    }
-
-    function clearActivePresets(exceptLiveValue = "") {
-      document.querySelectorAll(".preset-btn").forEach((b) => {
-        b.classList.toggle("active", Boolean(exceptLiveValue) && b.dataset.livePr === exceptLiveValue);
-      });
+      setStatus(`Loaded '${p.sourceLabel}' in ${report.meta.durationMs}ms · 100% client-side`);
     }
 
     function parseBrowserPrInput(raw) {
@@ -289,8 +1049,7 @@
         const { owner, repo, sha } = parsed;
         clearActivePresets();
         setStatus(`Fetching commit ${owner}/${repo}@${sha.slice(0, 7)}…`);
-        const commitApi = `https://api.github.com/repos/${owner}/${repo}/commits/${sha}`;
-        const res = await fetch(commitApi);
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/${sha}`);
         if (!res.ok) throw new Error(`GitHub API ${res.status}: could not load commit ${sha}`);
         const data = await res.json();
         const rawDiff = (data.files || [])
@@ -327,7 +1086,6 @@
       }
       const meta = await metaRes.json();
 
-      // Primary: fetch raw unified diff; Fallback: reconstruct from /files JSON patches
       let rawDiff = "";
       try {
         const diffRes = await fetch(baseApi, {
@@ -375,6 +1133,7 @@
       e.preventDefault();
       try {
         await fetchPublicPrInBrowser(prInput.value);
+        document.getElementById("workbench").scrollIntoView({ behavior: "smooth", block: "start" });
       } catch (err) {
         setStatus(err.message || String(err), true);
       }
@@ -391,7 +1150,6 @@
 
     document.querySelectorAll("[data-live-pr]").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        document.querySelectorAll(".preset-btn").forEach((b) => b.classList.toggle("active", b === btn));
         prInput.value = btn.dataset.livePr;
         try {
           await fetchPublicPrInBrowser(btn.dataset.livePr);
@@ -429,7 +1187,7 @@
       setStatus(`X-rayed custom diff (${report.parsedDiff.stats.totalFiles} files) in ${report.meta.durationMs}ms`);
     });
 
-    // Boot: check `?pr=` query param or hash, otherwise mount flagship preset
+    // Boot
     const params = new URLSearchParams(window.location.search);
     const initialPr = params.get("pr") || window.location.hash.replace(/^#/, "");
     if (initialPr && parseBrowserPrInput(initialPr)) {
