@@ -5,8 +5,8 @@
  * Zero runtime dependencies — works directly via `npx github:unbridled-41/diffxray` or `diffxray`.
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { resolve, join } from "node:path";
 import { execFile } from "node:child_process";
 import {
   xrayDiff,
@@ -50,6 +50,7 @@ Options:
   --svg [path]             Write adaptive dark/light SVG blast-radius card (default: diffxray-card.svg)
   --markdown [path]        Write GitHub PR Markdown review tour (prints to stdout if no path given)
   --sarif [path]           Write SARIF 2.1.0 report (default: diffxray-report.sarif)
+  --config <path>          Path to policy file (auto-discovers .diffxray.json if present)
   --json                   Print structured JSON analysis to stdout
   --fail-on <severity>     Exit with code 1 if findings >= severity (critical|high|medium|low)
   --no-workspace           Skip local repository untouched-caller scan
@@ -76,6 +77,7 @@ function parseCliArgs(argv) {
     staged: false,
     pr: "",
     file: "",
+    config: "",
     stdin: false,
     title: process.env.DIFFXRAY_TITLE || "",
     html: null,
@@ -114,6 +116,7 @@ function parseCliArgs(argv) {
     else if (arg === "--no-color") opts.color = false;
     else if (arg === "--pr") opts.pr = argv[++i] || "";
     else if (arg === "--file") opts.file = argv[++i] || "";
+    else if (arg === "--config") opts.config = argv[++i] || "";
     else if (arg === "--title") opts.title = argv[++i] || "";
     else if (arg === "--fail-on") opts.failOn = (argv[++i] || "").toLowerCase();
     else if (arg === "--html") opts.html = peekNextFile("diffxray-report.html");
@@ -134,6 +137,18 @@ function parseCliArgs(argv) {
   }
 
   return opts;
+}
+
+function loadRepoPolicy(explicitPath, cwd) {
+  const candidates = explicitPath
+    ? [resolve(explicitPath)]
+    : [join(cwd, ".diffxray.json"), ...(getGitRoot(cwd) ? [join(getGitRoot(cwd), ".diffxray.json")] : [])];
+  for (const cand of candidates) {
+    if (existsSync(cand)) {
+      return JSON.parse(readFileSync(cand, "utf8"));
+    }
+  }
+  return {};
 }
 
 const FAIL_THRESHOLD = {
@@ -202,11 +217,18 @@ async function main() {
     }
   }
 
+  const policy = loadRepoPolicy(opts.config, process.cwd());
+  const effectiveFailOn = (opts.failOn || policy.failOn || "").toLowerCase();
+
   const report = xrayDiff(rawDiff, {
     title,
     sourceLabel,
     prUrl,
     workspaceFiles,
+    minMoveLines: policy.minMoveLines,
+    minMoveSimilarity: policy.minMoveSimilarity,
+    ignoreRules: policy.ignoreRules,
+    ignorePaths: policy.ignorePaths,
   });
 
   if (opts.html) {
@@ -253,8 +275,8 @@ async function main() {
     process.stdout.write(renderTerminalReport(report, { color: opts.color }) + "\n");
   }
 
-  if (opts.failOn && FAIL_THRESHOLD[opts.failOn]) {
-    const triggered = FAIL_THRESHOLD[opts.failOn].some(
+  if (effectiveFailOn && FAIL_THRESHOLD[effectiveFailOn]) {
+    const triggered = FAIL_THRESHOLD[effectiveFailOn].some(
       (sev) => (report.riskReport.counts[sev] || 0) > 0
     );
     if (triggered) {

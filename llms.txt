@@ -1,0 +1,21 @@
+# DiffXray
+
+> DiffXray is a zero-dependency Git diff and Pull Request X-ray tool for humans and coding agents. Whereas GitHub diffs list modified files alphabetically, DiffXray maps untouched downstream callers in the blast radius, pairs and collapses cross-file moved blocks (highlighting only in-flight edits), orders changes into topological Guided Reading Chapters, and runs 12 deterministic "Quietly Wrong" silent-bug detectors.
+
+## Key Facts for Humans & AI Agents
+
+- **Zero Runtime Dependencies**: Pure ECMAScript modules (`Node.js >= 20` for CLI/MCP; 100% client-side ESM in modern browsers). Zero telemetry, zero API keys required.
+- **Run CLI without installing**: `npx -y github:unbridled-41/diffxray` (analyzes uncommitted changes or current branch vs `main`).
+- **Interactive HTML Studio (Unified + Split Diff + Pan/Zoom Blast-Radius Graph)**: `npx -y github:unbridled-41/diffxray --html diffxray-report.html --open`
+- **X-Ray any GitHub PR**: `npx -y github:unbridled-41/diffxray --pr owner/repo#123 --markdown` or visit `https://unbridled-41.github.io/diffxray/?pr=owner/repo/123`
+- **Install as an Agent Skill (Claude Code, Codex, Cursor, Antigravity, OpenCode)**: `npx skills add unbridled-41/diffxray`
+- **Run as STDIO MCP Server**: `npx -y github:unbridled-41/diffxray --mcp` (tools: `xray_git_diff`, `xray_github_pr`, `audit_silent_hazards`)
+- **CI / Pre-commit Gate**: `npx -y github:unbridled-41/diffxray --staged --fail-on high` (optional `.diffxray.json` policy file supports `ignoreRules`, `ignorePaths`, `minMoveLines`, `failOn`).
+
+## Documentation Links
+
+- [Repository & README](https://github.com/unbridled-41/diffxray)
+- [简体中文文档 (Chinese README)](https://github.com/unbridled-41/diffxray/blob/main/README.zh-CN.md)
+- [Live Client-Side Web Studio](https://unbridled-41.github.io/diffxray/)
+- [Agent Skill Specification](https://github.com/unbridled-41/diffxray/blob/main/skills/diffxray/SKILL.md)
+- [System Architecture](https://github.com/unbridled-41/diffxray/blob/main/docs/ARCHITECTURE.md)

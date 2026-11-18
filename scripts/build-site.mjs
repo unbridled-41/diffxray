@@ -16,6 +16,7 @@ mkdirSync(join(OUT, "src"), { recursive: true });
 
 cpSync(join(ROOT, "site", "index.html"), join(OUT, "index.html"));
 cpSync(join(ROOT, "site", "presets.mjs"), join(OUT, "presets.mjs"));
+cpSync(join(ROOT, "llms.txt"), join(OUT, "llms.txt"));
 cpSync(join(ROOT, "src", "version.mjs"), join(OUT, "src", "version.mjs"));
 cpSync(join(ROOT, "src", "index.mjs"), join(OUT, "src", "index.mjs"));
 cpSync(join(ROOT, "src", "core"), join(OUT, "src", "core"), { recursive: true });

@@ -518,6 +518,7 @@ export function renderHtmlStudio(report) {
   </div>
   <div class="top-actions">
     <span id="hdr-grade" class="pill mono"></span>
+    <button class="btn" id="btn-diff-mode" title="Toggle Unified vs Side-by-Side Split diff (s)">Diff: Unified</button>
     <button class="btn" id="btn-toggle-moves" title="Toggle pure moved code blocks">Hide Pure Moves: ON</button>
     <button class="btn" id="btn-theme" title="Switch Dark / Light mode">Theme</button>
   </div>
@@ -587,6 +588,7 @@ export function renderHtmlStudio(report) {
   const STATE = JSON.parse(rawJson);
   const { report, markdownTour, svgCard } = STATE;
   let hidePureMoves = true;
+  let splitDiffMode = false;
   let filterQuery = "";
   let riskFilter = "all";
   const expandedMoves = new Set();
@@ -652,6 +654,15 @@ export function renderHtmlStudio(report) {
     renderTour();
   });
 
+  // Unified vs Split Diff Mode Toggle
+  const diffModeBtn = document.getElementById("btn-diff-mode");
+  function toggleSplitMode() {
+    splitDiffMode = !splitDiffMode;
+    diffModeBtn.textContent = \`Diff: \${splitDiffMode ? "Split" : "Unified"}\`;
+    renderTour();
+  }
+  diffModeBtn.addEventListener("click", toggleSplitMode);
+
   // Search Filter
   const searchInput = document.getElementById("file-filter");
   searchInput.addEventListener("input", (e) => {
@@ -666,6 +677,7 @@ export function renderHtmlStudio(report) {
       return;
     }
     if (e.key === "/") { e.preventDefault(); searchInput.focus(); }
+    else if (e.key === "s") toggleSplitMode();
     else if (e.key === "1") activateTab("tour");
     else if (e.key === "2") activateTab("graph");
     else if (e.key === "3") activateTab("risks");
@@ -701,8 +713,9 @@ export function renderHtmlStudio(report) {
     const callersCount = (file.downstreamCallers || []).length;
     let rowsHtml = "";
 
+    const colSpan = splitDiffMode ? 4 : 3;
     for (const hunk of file.hunks || []) {
-      rowsHtml += \`<tr class="hunk-row mono"><td colspan="3">\${esc(hunk.header)}</td></tr>\`;
+      rowsHtml += \`<tr class="hunk-row mono"><td colspan="\${colSpan}">\${esc(hunk.header)}</td></tr>\`;
       let idx = 0;
       while (idx < hunk.lines.length) {
         const line = hunk.lines[idx];
@@ -718,7 +731,39 @@ export function renderHtmlStudio(report) {
           const peer = mvMeta
             ? (mvMeta.fromFile === file.path ? \`moved → \${mvMeta.toFile}\` : \`moved ← \${mvMeta.fromFile}\`)
             : "moved block";
-          rowsHtml += \`<tr class="move-collapse-row mono" data-move-key="\${esc(moveId + ":" + file.path)}"><td colspan="3">⇄ \${count} moved lines collapsed (\${esc(peer)}) — click to expand</td></tr>\`;
+          rowsHtml += \`<tr class="move-collapse-row mono" data-move-key="\${esc(moveId + ":" + file.path)}"><td colspan="\${colSpan}">⇄ \${count} moved lines collapsed (\${esc(peer)}) — click to expand</td></tr>\`;
+          continue;
+        }
+
+        if (splitDiffMode) {
+          if (line.type === "context") {
+            const cell = esc(" " + (line.content || ""));
+            rowsHtml += \`<tr class="diff-line mono"><td class="ln">\${line.oldNumber ?? ""}</td><td class="code-cell" style="width:50%;border-right:1px solid var(--border)">\${cell}</td><td class="ln">\${line.newNumber ?? ""}</td><td class="code-cell" style="width:50%">\${cell}</td></tr>\`;
+            idx++;
+            continue;
+          }
+          const dels = [];
+          const adds = [];
+          while (idx < hunk.lines.length && hunk.lines[idx].type === "del") dels.push(hunk.lines[idx++]);
+          while (idx < hunk.lines.length && hunk.lines[idx].type === "add") adds.push(hunk.lines[idx++]);
+          const maxLen = Math.max(dels.length, adds.length);
+          for (let k = 0; k < maxLen; k++) {
+            const dL = dels[k];
+            const aL = adds[k];
+            const leftTd = dL
+              ? \`<td class="ln line-del">\${dL.oldNumber ?? ""}</td><td class="code-cell line-del" style="width:50%;border-right:1px solid var(--border)">\${renderCodeWithIntraline(dL)}</td>\`
+              : \`<td class="ln"></td><td class="code-cell" style="width:50%;border-right:1px solid var(--border)"></td>\`;
+            const rightTd = aL
+              ? \`<td class="ln line-add">\${aL.newNumber ?? ""}</td><td class="code-cell line-add" style="width:50%">\${renderCodeWithIntraline(aL)}</td>\`
+              : \`<td class="ln"></td><td class="code-cell" style="width:50%"></td>\`;
+            rowsHtml += \`<tr class="diff-line mono">\${leftTd}\${rightTd}</tr>\`;
+            if (aL && aL.newNumber && findingsByLine.has(aL.newNumber)) {
+              for (const rf of findingsByLine.get(aL.newNumber)) {
+                rowsHtml += \`<tr><td colspan="4"><div class="inline-risk-box"><div><strong>[\${esc(rf.severity.toUpperCase())} · \${esc(rf.ruleId)}]</strong> \${esc(rf.title)}<div style="color:var(--fg-muted);margin-top:2px">\${esc(rf.whyItMatters)}</div></div><button class="btn copy-fix-btn" data-prompt="\${esc(rf.agentFixPrompt)}">Copy Agent Fix Prompt</button></div></td></tr>\`;
+              }
+              findingsByLine.delete(aL.newNumber);
+            }
+          }
           continue;
         }
 
