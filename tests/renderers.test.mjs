@@ -80,5 +80,6 @@ test("v2.1.0 HTML Studio includes freely draggable Blast-Radius nodes, lane grou
   assert.ok(html.includes("computeSmartEdgePath"), "must compute smart 4-side Bézier edge geometry");
   assert.ok(html.includes('id="layout-reset"'), "must include Reset Layout control");
   assert.ok(html.includes('id="toggle-snap"'), "must include Snap-to-Grid toggle");
+  assert.ok(html.includes('class="graph-top-bar"'), "must arrange graph hint and toolbar in non-overlapping top flex bar");
   assert.ok(html.includes('id="dxr-arrow-danger"'), "must define directional SVG arrow markers");
 });
