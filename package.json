@@ -1,0 +1,56 @@
+{
+  "name": "diffxray",
+  "version": "0.1.0",
+  "description": "X-ray any Git diff or AI-generated PR: interactive blast-radius graph, cross-file move detector, silent-bug radar & guided review tour. Zero dependencies.",
+  "type": "module",
+  "license": "MIT",
+  "author": "DiffXray Contributors (https://github.com/unbridled-41/diffxray)",
+  "homepage": "https://unbridled-41.github.io/diffxray/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unbridled-41/diffxray.git"
+  },
+  "bugs": {
+    "url": "https://github.com/unbridled-41/diffxray/issues"
+  },
+  "bin": {
+    "diffxray": "./bin/diffxray.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./core": "./src/core/index.mjs",
+    "./risk": "./src/analyzers/risk-radar.mjs",
+    "./renderers": "./src/renderers/index.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "skills/",
+    "SKILL.md",
+    "action.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/verify-integrity.mjs"
+  },
+  "keywords": [
+    "git",
+    "diff",
+    "code-review",
+    "pull-request",
+    "blast-radius",
+    "static-analysis",
+    "claude-code",
+    "codex",
+    "mcp",
+    "agent-skills",
+    "sarif",
+    "visualization"
+  ]
+}
