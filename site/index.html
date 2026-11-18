@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DiffXray Live Studio — X-Ray Any GitHub PR or Git Diff in Your Browser</title>
+  <meta name="description" content="Zero-install, 100% client-side visual Git diff & Pull Request X-Ray: Blast-Radius graph, cross-file move collapsing, guided reading tour & silent AI-bug radar." />
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #090b10;
+      --elev: #10141d;
+      --card: #151a25;
+      --hover: #1c2332;
+      --border: #232b3b;
+      --fg: #eef2f6;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --accent-soft: rgba(16, 185, 129, 0.14);
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+      font-size: 13.5px;
+    }
+    code, input, textarea, .mono {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    .shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .launcher-bar {
+      background: var(--elev);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    .brand-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-size: 12px;
+    }
+    .pr-form {
+      display: flex;
+      flex: 1;
+      max-width: 620px;
+      gap: 6px;
+      min-width: 260px;
+    }
+    .pr-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 12.5px;
+    }
+    .pr-input:focus { outline: none; border-color: var(--accent); }
+    .btn {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--fg);
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--hover); }
+    .btn-primary {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .preset-strip {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+    .preset-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .preset-btn {
+      cursor: pointer;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 11.5px;
+    }
+    .preset-btn.active, .preset-btn:hover {
+      color: var(--fg);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .status-msg { color: var(--muted); font-size: 11.5px; }
+    .status-err { color: var(--danger); }
+    iframe#studio-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: var(--bg);
+    }
+
+    /* Paste Diff Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.68);
+      display: none;
+      place-items: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: grid; }
+    .modal {
+      background: var(--elev);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 720px;
+      padding: 20px;
+    }
+    .diff-paste-area {
+      width: 100%;
+      height: 260px;
+      background: var(--bg);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px;
+      font-size: 12px;
+      margin: 10px 0 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="launcher-bar">
+      <a class="brand" href="https://github.com/unbridled-41/diffxray" target="_blank" rel="noopener">
+        <span class="brand-dot">◉</span>
+        <span>DiffXray Studio</span>
+      </a>
+
+      <form class="pr-form" id="pr-form">
+        <input
+          type="text"
+          id="pr-input"
+          class="pr-input mono"
+          placeholder="Paste any public GitHub PR URL or owner/repo#123…"
+          aria-label="GitHub Pull Request URL"
+        />
+        <button type="submit" class="btn btn-primary" id="pr-submit">X-Ray PR →</button>
+      </form>
+
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="open-paste-btn">Paste / Drop .diff</button>
+        <button class="btn" id="share-link-btn" title="Copy deep link to current PR X-Ray">Share Link</button>
+        <a class="btn btn-primary" href="https://github.com/unbridled-41/diffxray" target="_blank" rel="noopener">★ Star on GitHub</a>
+      </div>
+    </div>
+
+    <div class="preset-strip">
+      <div class="preset-pills">
+        <span style="color:var(--muted);font-weight:600">Try Instant X-Ray:</span>
+        <button class="preset-btn active" data-preset="vibe-auth">1. Vibe-Coded Auth PR (5 Silent Bugs)</button>
+        <button class="preset-btn" data-preset="clean-refactor">2. Clean Module Split (76% Moved)</button>
+        <button class="preset-btn" data-live-pr="unbridled-41/diffxray#12">3. Live GitHub Fetch: diffxray#12</button>
+      </div>
+      <div id="status-bar" class="status-msg mono">100% client-side · zero telemetry · npx github:unbridled-41/diffxray</div>
+    </div>
+
+    <iframe id="studio-frame" title="DiffXray Interactive Studio"></iframe>
+  </div>
+
+  <!-- Paste / Drop Local Diff Modal -->
+  <div class="modal-backdrop" id="paste-modal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Paste `git diff` or Drop a `.diff` / `.patch` File</h3>
+        <button class="btn" id="close-paste-btn">Close</button>
+      </div>
+      <p style="color:var(--muted);margin:6px 0 0;font-size:12.5px">
+        Processed 100% locally inside your browser tab — zero bytes leave your device.
+      </p>
+      <textarea id="raw-diff-input" class="diff-paste-area mono" placeholder="diff --git a/src/app.ts b/src/app.ts&#10;--- a/src/app.ts&#10;+++ b/src/app.ts&#10;@@ ..."></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <input type="file" id="diff-file-picker" accept=".diff,.patch,.txt" />
+        <button class="btn btn-primary" id="run-pasted-diff">X-Ray Pasted Diff →</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { xrayDiff, renderHtmlStudio } from "./src/index.mjs";
+    import { PRESETS } from "./presets.mjs";
+
+    const frame = document.getElementById("studio-frame");
+    const statusEl = document.getElementById("status-bar");
+    const prInput = document.getElementById("pr-input");
+
+    function setStatus(text, isErr = false) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("status-err", isErr);
+    }
+
+    function mountReport(report) {
+      const html = renderHtmlStudio(report);
+      frame.srcdoc = html;
+    }
+
+    function loadPreset(key) {
+      const p = PRESETS[key] || PRESETS["vibe-auth"];
+      document.querySelectorAll(".preset-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.preset === key);
+      });
+      const report = xrayDiff(p.rawDiff, {
+        title: p.title,
+        sourceLabel: p.sourceLabel,
+        workspaceFiles: p.workspaceFiles,
+      });
+      mountReport(report);
+      setStatus(`Loaded preset '${p.sourceLabel}' in ${report.meta.durationMs}ms · 100% client-side`);
+    }
+
+    function parseBrowserPrInput(raw) {
+      const s = (raw || "").trim();
+      let m = /^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/i.exec(s);
+      if (m) return { owner: m[1], repo: m[2], number: m[3] };
+      m = /^([^/#\s]+)\/([^/#\s]+)(?:#|\/pull\/|\/)(\d+)$/.exec(s);
+      if (m) return { owner: m[1], repo: m[2], number: m[3] };
+      return null;
+    }
+
+    async function fetchPublicPrInBrowser(spec) {
+      const parsed = parseBrowserPrInput(spec);
+      if (!parsed) {
+        throw new Error("Enter a valid GitHub PR URL (https://github.com/owner/repo/pull/123) or owner/repo#123");
+      }
+      const { owner, repo, number } = parsed;
+      setStatus(`Fetching ${owner}/${repo}#${number} from GitHub API…`);
+
+      const baseApi = `https://api.github.com/repos/${owner}/${repo}/pulls/${number}`;
+      const metaRes = await fetch(baseApi);
+      if (!metaRes.ok) {
+        throw new Error(`GitHub API ${metaRes.status}: could not load ${owner}/${repo}#${number}`);
+      }
+      const meta = await metaRes.json();
+
+      // Primary: fetch raw unified diff; Fallback: reconstruct from /files JSON patches
+      let rawDiff = "";
+      try {
+        const diffRes = await fetch(baseApi, {
+          headers: { Accept: "application/vnd.github.v3.diff" },
+        });
+        if (diffRes.ok) {
+          rawDiff = await diffRes.text();
+        }
+      } catch (diffFetchErr) {
+        setStatus(`Using JSON patch fallback (${diffFetchErr.message || "CORS"})…`);
+      }
+
+      if (!rawDiff) {
+        const filesRes = await fetch(`${baseApi}/files?per_page=100`);
+        if (!filesRes.ok) {
+          throw new Error(`GitHub API ${filesRes.status}: could not load PR files`);
+        }
+        const files = await filesRes.json();
+        rawDiff = files
+          .filter((f) => f.patch)
+          .map(
+            (f) =>
+              `diff --git a/${f.previous_filename || f.filename} b/${f.filename}\n` +
+              `--- ${f.status === "added" ? "/dev/null" : "a/" + (f.previous_filename || f.filename)}\n` +
+              `+++ ${f.status === "removed" ? "/dev/null" : "b/" + f.filename}\n` +
+              f.patch
+          )
+          .join("\n");
+      }
+
+      const report = xrayDiff(rawDiff, {
+        title: `PR #${number}: ${meta.title || ""}`,
+        sourceLabel: `${owner}/${repo}#${number}`,
+        prUrl: meta.html_url,
+      });
+      mountReport(report);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("pr", `${owner}/${repo}/${number}`);
+      window.history.replaceState(null, "", url.toString());
+      setStatus(`X-rayed ${owner}/${repo}#${number} (${report.parsedDiff.stats.totalFiles} files) in ${report.meta.durationMs}ms`);
+    }
+
+    document.getElementById("pr-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        await fetchPublicPrInBrowser(prInput.value);
+      } catch (err) {
+        setStatus(err.message || String(err), true);
+      }
+    });
+
+    document.querySelectorAll("[data-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("pr");
+        window.history.replaceState(null, "", url.toString());
+        loadPreset(btn.dataset.preset);
+      });
+    });
+
+    document.querySelectorAll("[data-live-pr]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        document.querySelectorAll(".preset-btn").forEach((b) => b.classList.toggle("active", b === btn));
+        prInput.value = btn.dataset.livePr;
+        try {
+          await fetchPublicPrInBrowser(btn.dataset.livePr);
+        } catch (err) {
+          setStatus(err.message || String(err), true);
+        }
+      });
+    });
+
+    document.getElementById("share-link-btn").addEventListener("click", () => {
+      navigator.clipboard?.writeText(window.location.href);
+      setStatus("Copied shareable Studio URL to clipboard!");
+    });
+
+    // Paste / Drop Modal
+    const modal = document.getElementById("paste-modal");
+    document.getElementById("open-paste-btn").addEventListener("click", () => modal.classList.add("open"));
+    document.getElementById("close-paste-btn").addEventListener("click", () => modal.classList.remove("open"));
+    document.getElementById("diff-file-picker").addEventListener("change", async (e) => {
+      const f = e.target.files?.[0];
+      if (f) {
+        document.getElementById("raw-diff-input").value = await f.text();
+      }
+    });
+    document.getElementById("run-pasted-diff").addEventListener("click", () => {
+      const txt = document.getElementById("raw-diff-input").value;
+      if (!txt.trim()) return;
+      const report = xrayDiff(txt, {
+        title: "Custom Pasted Patch",
+        sourceLabel: "local browser paste",
+      });
+      mountReport(report);
+      modal.classList.remove("open");
+      setStatus(`X-rayed custom diff (${report.parsedDiff.stats.totalFiles} files) in ${report.meta.durationMs}ms`);
+    });
+
+    // Boot: check `?pr=` query param or hash, otherwise mount flagship preset
+    const params = new URLSearchParams(window.location.search);
+    const initialPr = params.get("pr") || window.location.hash.replace(/^#/, "");
+    if (initialPr && parseBrowserPrInput(initialPr)) {
+      prInput.value = initialPr;
+      fetchPublicPrInBrowser(initialPr).catch((err) => {
+        setStatus(err.message || String(err), true);
+        loadPreset("vibe-auth");
+      });
+    } else {
+      loadPreset("vibe-auth");
+    }
+  </script>
+</body>
+</html>

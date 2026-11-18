@@ -238,8 +238,10 @@ export function analyzeRisks(parsedDiff, moveReport, symbolReport, blastRadius) 
           }
 
           // 3. Test Skip / Bypass (`it.skip`, `describe.only`, `@pytest.mark.skip`, `#[ignore]`)
+          // Ignore embedded unified-diff fixture lines starting with `+`/`-` inside test strings.
           if (
             isTest &&
+            !/^[+-]/.test(trimmed) &&
             (/\b(?:it|test|describe)\.(?:skip|only)\s*\(/.test(trimmed) ||
               /^(?:xit|xtest|xdescribe)\s*\(/.test(trimmed) ||
               /@pytest\.mark\.skip\b/.test(trimmed) ||
