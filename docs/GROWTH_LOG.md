@@ -19,6 +19,9 @@
 | `2026-11-18T05:35:50Z` | **Community Directory PR** | [`punkpeye/awesome-mcp-servers#19907`](https://github.com/punkpeye/awesome-mcp-servers/pull/19907) (97.8k⭐) | `check-submission` CI passed; awaiting Glama OAuth link (`glama.ai/mcp/servers`) & maintainer merge |
 | `2026-11-18T05:43:25Z` | **Live Production Browser QA Audit** | `https://unbridled-41.github.io/diffxray/` | 0 console errors; caught inline SVG `:root` Light-Theme CSS collision + 4th card clipping + graph fit |
 | `2026-11-18T05:49:00Z` | **`v1.2.0` QA-Driven Polish & Hook Release** | GitHub Release `v1.2.0` + GitHub Pages redeploy | Fixed Light Theme contrast, symmetric SVG card geometry, Blast-Radius auto-fit, GitHub commit URLs & `--install-hook` |
+| `2026-11-18T05:54:56Z` | **6h Cloud Telemetry Cron Enabled** | [`.github/workflows/growth-telemetry.yml`](../.github/workflows/growth-telemetry.yml) | Live Star/Fork/Download dashboard auto-updating on [Issue #8](https://github.com/unbridled-41/diffxray/issues/8) |
+| `2026-11-18T05:58:50Z` | **Tech Enthusiast Weekly Submission** | [`ruanyf/weekly#13487`](https://github.com/ruanyf/weekly/issues/13487) (108.2k⭐) | Official creator self-recommendation issue opened |
+| `2026-11-18T05:58:56Z` | **HelloGitHub Monthly Submission** | [`521xueweihan/HelloGitHub#4399`](https://github.com/521xueweihan/HelloGitHub/issues/4399) (189.6k⭐) | Official structured YAML project submission opened |
 
 ---
 
