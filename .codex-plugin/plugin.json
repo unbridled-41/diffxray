@@ -1,6 +1,6 @@
 {
   "name": "diffxray",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "X-ray any Git diff or AI-generated PR: blast-radius graph, cross-file move collapsing, 12 'Quietly Wrong' silent-bug detectors & guided reading tour.",
   "author": {
     "name": "DiffXray Contributors",

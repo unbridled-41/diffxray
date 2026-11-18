@@ -336,9 +336,12 @@ export function renderHtmlStudio(report, options = {}) {
   }
   .kpi-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 26px;
+  }
+  @media (max-width: 720px) {
+    .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   .kpi-card {
     background: var(--bg-card);

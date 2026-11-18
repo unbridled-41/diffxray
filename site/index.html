@@ -80,6 +80,8 @@
       font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
     }
     a { color: inherit; text-decoration: none; }
+    html { scroll-behavior: smooth; }
+    section[id] { scroll-margin-top: 84px; }
 
     /* Sticky Editorial Navigation */
     .site-nav {
@@ -619,6 +621,7 @@
             type="text"
             id="pr-input"
             class="pr-input mono"
+            data-i18n-placeholder="pr_placeholder"
             placeholder="Paste any public GitHub PR or Commit URL (e.g. owner/repo#123)…"
             aria-label="GitHub Pull Request or Commit URL"
           />
@@ -628,7 +631,7 @@
         <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
           <button class="pill-btn" id="open-paste-btn" data-i18n="btn_paste">Paste / Drop .diff</button>
           <button class="pill-btn" id="share-link-btn" data-i18n="btn_share">Share Link</button>
-          <button class="pill-btn" id="fullscreen-btn" title="Toggle Fullscreen Workbench">⤢ Expand</button>
+          <button class="pill-btn" id="fullscreen-btn" data-i18n="btn_expand" title="Toggle Fullscreen Workbench">⤢ Expand</button>
         </div>
       </div>
 
@@ -854,6 +857,9 @@
         btn_xray: "X-Ray PR →",
         btn_paste: "Paste / Drop .diff",
         btn_share: "Share Link",
+        btn_expand: "⤢ Expand",
+        btn_exit_fs: "✕ Exit Fullscreen",
+        pr_placeholder: "Paste any public GitHub PR or Commit URL (e.g. owner/repo#123)…",
         label_presets: "Interactive Scenarios:",
         why_kicker: "The Verification Bottleneck",
         why_title: "Three blind spots traditional diff viewers were never built to show.",
@@ -884,6 +890,9 @@
         btn_xray: "立即透视 →",
         btn_paste: "粘贴 / 拖入 .diff",
         btn_share: "分享链接",
+        btn_expand: "⤢ 全屏展开",
+        btn_exit_fs: "✕ 退出全屏",
+        pr_placeholder: "输入任意公开 GitHub PR 或 Commit 链接（如 owner/repo#123）…",
         label_presets: "一键切换交互示例：",
         why_kicker: "AI 时代的代码审查瓶颈",
         why_title: "传统按字母排序的 Diff 视图，天然隐藏了三件最致命的事。",
@@ -986,6 +995,13 @@
         const key = el.dataset.i18n;
         if (dict[key]) el.textContent = dict[key];
       });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.dataset.i18nPlaceholder;
+        if (dict[key]) el.placeholder = dict[key];
+      });
+      if (wbWrap.classList.contains("workbench-Wrap-fullscreen")) {
+        fsBtn.textContent = dict.btn_exit_fs;
+      }
     });
 
     // Fullscreen Workbench Toggle
@@ -993,7 +1009,8 @@
     const fsBtn = document.getElementById("fullscreen-btn");
     fsBtn.addEventListener("click", () => {
       const isFs = wbWrap.classList.toggle("workbench-Wrap-fullscreen");
-      fsBtn.textContent = isFs ? "✕ Exit Fullscreen" : "⤢ Expand";
+      const dict = I18N[currentLang];
+      fsBtn.textContent = isFs ? dict.btn_exit_fs : dict.btn_expand;
     });
 
     function setStatus(text, isErr = false) {
