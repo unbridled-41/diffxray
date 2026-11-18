@@ -1,6 +1,6 @@
 {
   "name": "diffxray",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "X-ray any Git diff or AI-generated PR: interactive blast-radius graph, cross-file move detector, silent-bug radar & guided review tour. Zero dependencies.",
   "type": "module",
   "license": "MIT",
