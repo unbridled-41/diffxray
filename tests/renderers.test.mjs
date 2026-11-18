@@ -72,3 +72,13 @@ test("renderMarkdownTour and renderTerminalReport include chapters, risks, and s
   assert.ok(tuiPlain.includes("Trust Score"));
   assert.ok(!tuiPlain.includes("\x1b["), "color:false must omit ANSI escape codes");
 });
+
+test("v2.1.0 HTML Studio includes freely draggable Blast-Radius nodes, lane group drag, smart 4-side edge routing, and Reset Layout", () => {
+  const report = xrayDiff(XSS_AND_BLAST_DIFF);
+  const html = renderHtmlStudio(report);
+  assert.ok(html.includes("bindGraphNodeAndLaneDrag"), "must bind pointer drag handlers for nodes and lanes");
+  assert.ok(html.includes("computeSmartEdgePath"), "must compute smart 4-side Bézier edge geometry");
+  assert.ok(html.includes('id="layout-reset"'), "must include Reset Layout control");
+  assert.ok(html.includes('id="toggle-snap"'), "must include Snap-to-Grid toggle");
+  assert.ok(html.includes('id="dxr-arrow-danger"'), "must define directional SVG arrow markers");
+});

@@ -2,6 +2,13 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.1.0] - 2026-11-18
+
+### Interactive Draggable Blast-Radius Canvas
+- **Freely Draggable Module Nodes & Swimlane Columns**: Every module node card and swimlane header pill (`UNTOUCHED CALLERS`, `ENTRYPOINTS & API`, `CORE LOGIC`, `DATA, CONFIG & TESTS`) in the Blast-Radius Map now supports 60fps Pointer-Capture dragging at any zoom level, tactile 6-dot drag handles, and optional `12px` grid snapping (`Snap: 12px` or `Shift` + drag).
+- **Smart 4-Side Adaptive Port Routing & Arrowheads**: Connected dependency curves dynamically choose Right, Left, Bottom, or Top ports based on live node coordinates with directional SVG arrowheads and hover/selection path highlighting.
+- **Mousewheel Cursor-Centered Zoom & Non-Destructive `Fit View` / `Reset Layout`**: Scroll wheel zooms smoothly around cursor; `Fit View` frames your custom node arrangement without resetting positions, while `Reset Layout` restores default swimlanes.
+
 ## [2.0.1] - 2026-11-18
 
 ### Fixed & Polished (Live v2.0 QA)
