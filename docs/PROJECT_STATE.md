@@ -6,7 +6,7 @@
 
 - **Repository**: `https://github.com/unbridled-41/diffxray`
 - **Live Web Studio**: `https://unbridled-41.github.io/diffxray/` (`HTTP 200` verified)
-- **Current Version**: `1.1.0`
+- **Current Version**: `1.2.0`
 - **Current Phase**: Phase 4 — 7-Day 1,000-Star Growth Sprint & Continuous Iteration (`Milestone M4`)
 - **Formal `v1.0.0` Public Launch Timestamp**: **`2026-11-18T05:19:58Z`** (Baseline: `0` Stars)
 - **7-Day Assessment Deadline (`T+168h`)**: **`2026-11-25T05:19:58Z`**
@@ -25,7 +25,8 @@
 | PR #13 | #5 | M2 (Closed) | Zero-dep CLI, workspace scanner, JSON-RPC 2.0 STDIO MCP server & self-dogfooded GitHub Action | Merged |
 | PR #14 | #6 | M3 (Closed) | Zero-install client-side Live PR Web Studio (`?pr=owner/repo/num`) & GitHub Pages deploy | Merged |
 | PR #15 | #7 | M3 (Closed) | Universal `SKILL.md` (`skills.sh`), Claude/Codex plugins, animated hero media, bilingual README & `v1.0.0` release | Merged |
-| PR #17 | #16 | M4 (Active) | `v1.1.0`: Side-by-side Split Diff toggle, `.diffxray.json` policy config, `glama.json`, `server.json`, `Dockerfile`, `llms.txt` & `telemetry.mjs` | In Review |
+| PR #17 | #16 | M4 (Active) | `v1.1.0`: Side-by-side Split Diff toggle, `.diffxray.json` policy config, `glama.json`, `server.json`, `Dockerfile`, `llms.txt` & `telemetry.mjs` | Merged |
+| PR #19 | #18 | M4 (Active) | `v1.2.0`: Live Browser QA fixes (Light Theme `:root` leak, SVG card symmetry, Blast-Radius auto-fit), GitHub commit URLs & `--install-hook` | Merged / Active |
 
 ---
 

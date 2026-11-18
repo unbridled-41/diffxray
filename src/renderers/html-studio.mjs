@@ -57,7 +57,7 @@ export function renderHtmlStudio(report) {
     --diff-del-intra: rgba(239, 68, 68, 0.34);
     --shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
   }
-  [data-theme="light"] {
+  html[data-theme="light"], [data-theme="light"] {
     --bg: #f8fafc;
     --bg-elev: #ffffff;
     --bg-card: #ffffff;
@@ -181,6 +181,9 @@ export function renderHtmlStudio(report) {
 
   /* Navigation Tabs & KPI Bar */
   .subbar {
+    position: sticky;
+    top: 49px;
+    z-index: 35;
     background: var(--bg-elev);
     border-bottom: 1px solid var(--border);
     padding: 0 20px;
@@ -433,7 +436,7 @@ export function renderHtmlStudio(report) {
   .graph-toolbar {
     position: absolute;
     top: 14px;
-    left: 14px;
+    right: 14px;
     z-index: 10;
     display: flex;
     gap: 6px;
@@ -635,6 +638,8 @@ export function renderHtmlStudio(report) {
   function activateTab(tabId) {
     document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === tabId));
     document.querySelectorAll(".view-panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + tabId));
+    const filterBox = document.querySelector(".filter-box");
+    if (filterBox) filterBox.style.display = tabId === "tour" ? "flex" : "none";
     if (tabId === "graph") renderGraph();
   }
   document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -900,7 +905,13 @@ export function renderHtmlStudio(report) {
   }
 
   // TAB 2: Interactive SVG Blast-Radius Map
-  let panX = 30, panY = 30, scale = 1;
+  let panX = 24, panY = 24, scale = 1, graphAutoFitted = false;
+  function computeFitScale(laneCount) {
+    const stageEl = document.getElementById("graph-stage");
+    const availW = (stageEl?.clientWidth || 1000) - 48;
+    const neededW = Math.max(285, laneCount * 285);
+    return Math.max(0.55, Math.min(1, Number((availW / neededW).toFixed(2))));
+  }
   function renderGraph() {
     const svg = document.getElementById("blast-svg");
     const nodes = report.blastRadius.nodes.filter((n) => !n.isGenerated);
@@ -910,6 +921,11 @@ export function renderHtmlStudio(report) {
       { key: "core", label: "CORE LOGIC", filter: (n) => n.role === "changed" && (n.layer === "core" || n.layer === "ui") },
       { key: "data", label: "DATA, CONFIG & TESTS", filter: (n) => n.role === "changed" && !["entrypoint", "core", "ui"].includes(n.layer) },
     ].filter((l) => nodes.some(l.filter));
+
+    if (!graphAutoFitted && lanes.length > 0) {
+      scale = computeFitScale(lanes.length);
+      graphAutoFitted = true;
+    }
 
     const pos = new Map();
     const laneW = 285;
@@ -1028,7 +1044,7 @@ export function renderHtmlStudio(report) {
   window.addEventListener("mouseup", () => { dragging = false; });
   document.getElementById("zoom-in").addEventListener("click", () => { scale = Math.min(2.4, scale + 0.2); renderGraph(); });
   document.getElementById("zoom-out").addEventListener("click", () => { scale = Math.max(0.4, scale - 0.2); renderGraph(); });
-  document.getElementById("zoom-reset").addEventListener("click", () => { panX = 30; panY = 30; scale = 1; renderGraph(); });
+  document.getElementById("zoom-reset").addEventListener("click", () => { panX = 24; panY = 24; graphAutoFitted = false; renderGraph(); });
 
   // TAB 3: Risk Radar
   function renderRisks() {

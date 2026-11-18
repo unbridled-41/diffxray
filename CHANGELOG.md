@@ -2,6 +2,18 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [1.2.0] - 2026-11-18
+
+### Fixed & Improved (Live Browser QA Driven)
+- **Light Theme Contrast Fix**: Scoped inline SVG custom properties to `.dxr-svg-root` (`--dxr-*`) so embedded SVG cards never override host HTML `:root` variables in Light Mode.
+- **Symmetric SVG Card Geometry**: Eliminated multi-digit flag count overlap and right-border clipping in `renderSvgCard()`.
+- **Blast-Radius Graph Auto-Fit**: Anchored zoom toolbar top-right and auto-scaled initial canvas zoom so all 4 swimlanes fit cleanly on 1280px–1440px viewports.
+- **Sticky Navigation & Preset State**: Kept the 4-tab bar sticky during scroll and cleared active preset state when loading custom `?pr=` or commit URLs.
+
+### Added
+- **GitHub Commit URL X-Ray**: Paste any `https://github.com/owner/repo/commit/<sha>` or `owner/repo@<sha>` directly into the Live Browser Studio.
+- **Zero-Husky Pre-Push Hook Installer**: Run `diffxray --install-hook` to install a fast `.git/hooks/pre-push` silent-hazard gate.
+
 ## [1.1.0] - 2026-11-18
 
 ### Added
