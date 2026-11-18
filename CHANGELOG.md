@@ -2,6 +2,11 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.2.5] - 2026-11-18
+
+### Fixed
+- **Restored Original Centered README Header & Logos**: Restored the original centered `README.md` / `README.zh-CN.md` header, badges, prose, and `logo-*.svg` from `v2.1.1`, keeping only the updated Claude-style UI showcase images (`showcase-overview.png`, `showcase-blast-radius.png`, and `sample-card.svg`).
+
 ## [2.2.4] - 2026-11-18
 
 ### Polished
