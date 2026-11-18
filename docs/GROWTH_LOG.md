@@ -16,6 +16,9 @@
 | `2026-11-18T05:19:58Z` | **Official `v1.0.0` Public Release** | GitHub Releases (`v1.0.0`) | Baseline `0⭐`, attached standalone HTML Studio + SVG Card |
 | `2026-11-18T05:21:58Z` | `skills.sh` & `npx` End-to-End Check | `npx skills add unbridled-41/diffxray` | Verified `Found 1 skill: diffxray` & `npx github:unbridled-41/diffxray` -> `1.0.0` |
 | `2026-11-18T05:32:00Z` | **`v1.1.0` Rapid Iteration** | Split Diff View + `.diffxray.json` + `glama.json` + `server.json` + `llms.txt` | Enables Glama.ai automated MCP scoring, Official MCP Registry compatibility & AI search discovery |
+| `2026-11-18T05:35:50Z` | **Community Directory PR** | [`punkpeye/awesome-mcp-servers#19907`](https://github.com/punkpeye/awesome-mcp-servers/pull/19907) (97.8k⭐) | `check-submission` CI passed; awaiting Glama OAuth link (`glama.ai/mcp/servers`) & maintainer merge |
+| `2026-11-18T05:43:25Z` | **Live Production Browser QA Audit** | `https://unbridled-41.github.io/diffxray/` | 0 console errors; caught inline SVG `:root` Light-Theme CSS collision + 4th card clipping + graph fit |
+| `2026-11-18T05:49:00Z` | **`v1.2.0` QA-Driven Polish & Hook Release** | GitHub Release `v1.2.0` + GitHub Pages redeploy | Fixed Light Theme contrast, symmetric SVG card geometry, Blast-Radius auto-fit, GitHub commit URLs & `--install-hook` |
 
 ---
 

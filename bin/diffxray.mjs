@@ -18,6 +18,7 @@ import {
   VERSION,
 } from "../src/index.mjs";
 import { acquireLocalGitDiff, fetchGitHubPrDiff, getGitRoot } from "../src/cli/git-runner.mjs";
+import { installPrePushHook } from "../src/cli/hook-installer.mjs";
 import { scanWorkspaceFiles } from "../src/cli/workspace-scanner.mjs";
 import { startMcpStdioServer } from "../src/mcp/server.mjs";
 
@@ -53,6 +54,8 @@ Options:
   --config <path>          Path to policy file (auto-discovers .diffxray.json if present)
   --json                   Print structured JSON analysis to stdout
   --fail-on <severity>     Exit with code 1 if findings >= severity (critical|high|medium|low)
+  --install-hook           Install lightweight .git/hooks/pre-push gate (zero Husky)
+  --force                  Overwrite existing pre-push hook when used with --install-hook
   --no-workspace           Skip local repository untouched-caller scan
   --no-color               Disable ANSI colors in terminal output
   --mcp                    Run as JSON-RPC 2.0 STDIO MCP server
@@ -90,6 +93,8 @@ function parseCliArgs(argv) {
     workspace: true,
     color: !process.env.NO_COLOR,
     mcp: false,
+    installHook: false,
+    force: false,
     help: false,
     version: false,
   };
@@ -108,6 +113,8 @@ function parseCliArgs(argv) {
     if (arg === "-h" || arg === "--help") opts.help = true;
     else if (arg === "-v" || arg === "--version") opts.version = true;
     else if (arg === "--mcp") opts.mcp = true;
+    else if (arg === "--install-hook") opts.installHook = true;
+    else if (arg === "--force") opts.force = true;
     else if (arg === "--staged" || arg === "--cached") opts.staged = true;
     else if (arg === "--stdin") opts.stdin = true;
     else if (arg === "--json") opts.json = true;
@@ -171,6 +178,11 @@ async function main() {
   }
   if (opts.mcp) {
     startMcpStdioServer();
+    return;
+  }
+  if (opts.installHook) {
+    const hookPath = installPrePushHook({ cwd: process.cwd(), force: opts.force });
+    console.log(`Installed DiffXray pre-push gate → ${hookPath}`);
     return;
   }
 
