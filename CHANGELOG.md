@@ -2,6 +2,11 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.2.4] - 2026-11-18
+
+### Polished
+- **Narrow Embedded Viewport Auto-Fit**: Lowered `fitGraphViewport()` minimum zoom floor to `0.36` so 4-lane graphs auto-fit cleanly inside `1024px` laptop embedded frames without horizontal clipping, and refreshed `docs/media/showcase-blast-radius.png` with the symmetrical lattice layout.
+
 ## [2.2.3] - 2026-11-18
 
 ### Fixed
