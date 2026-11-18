@@ -11,7 +11,13 @@ import {
   buildBlastRadius,
 } from "./core/index.mjs";
 import { analyzeRisks } from "./analyzers/risk-radar.mjs";
-import { renderSarifReport } from "./renderers/sarif.mjs";
+import {
+  renderSarifReport,
+  renderMarkdownTour,
+  renderSvgCard,
+  renderHtmlStudio,
+  renderTerminalReport,
+} from "./renderers/index.mjs";
 import { VERSION, REPO_URL, STUDIO_URL } from "./version.mjs";
 
 /**
@@ -71,6 +77,10 @@ export {
   buildBlastRadius,
   analyzeRisks,
   renderSarifReport,
+  renderMarkdownTour,
+  renderSvgCard,
+  renderHtmlStudio,
+  renderTerminalReport,
   VERSION,
   REPO_URL,
   STUDIO_URL,
