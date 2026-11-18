@@ -2,6 +2,12 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.2.1] - 2026-11-18
+
+### Improved Blast-Radius Initial Spacing & Viewport Balance
+- **Spacious Symmetrical Lattice Distribution**: Increased horizontal column spacing (`342px`) and adaptive vertical card pitch (`204px–236px` on compact diffs), vertically centering shorter columns relative to the tallest swimlane and centering the entire graph horizontally and vertically inside `#graph-stage`.
+- **Segment-Aware Path Formatting**: Added `formatGraphPath()` (`NODE_W = 262px`) so module paths fit untruncated up to 30 characters or truncate cleanly along `/` folder boundaries.
+
 ## [2.2.0] - 2026-11-18
 
 ### Editorial README & Authentic Website UI Media Overhaul

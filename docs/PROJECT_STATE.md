@@ -6,7 +6,7 @@
 
 - **Repository**: `https://github.com/unbridled-41/diffxray`
 - **Live Web Studio**: `https://unbridled-41.github.io/diffxray/` (`HTTP 200` verified — `v2.1` Draggable Blast-Radius Canvas & Warm Archival Editorial Design System)
-- **Current Version**: `2.2.0`
+- **Current Version**: `2.2.1`
 - **Current Phase**: Phase 4 — 7-Day 1,000-Star Growth Sprint & Continuous Iteration (`Milestone M4`)
 - **Formal `v1.0.0` Public Launch Timestamp**: **`2026-11-18T05:19:58Z`** (Baseline: `0` Stars)
 - **7-Day Assessment Deadline (`T+168h`)**: **`2026-11-25T05:19:58Z`**
