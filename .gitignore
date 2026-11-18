@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
+diffxray-report.html
+diffxray-card.svg
+diffxray-report.sarif
+.tmp/
