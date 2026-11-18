@@ -2,6 +2,11 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.2.3] - 2026-11-18
+
+### Fixed
+- **Version-Stamped Browser ES Module Specifiers**: Updated `scripts/build-site.mjs` to append `?v=<VERSION>` to relative `.mjs` imports in `site/dist/`, preventing stale `max-age=600` GitHub Pages sub-module caching on release upgrades.
+
 ## [2.2.2] - 2026-11-18
 
 ### Fixed
