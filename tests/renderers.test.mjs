@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 import {
   xrayDiff,
   renderHtmlStudio,
@@ -83,4 +84,9 @@ test("v2.1.0 HTML Studio includes freely draggable Blast-Radius nodes, lane grou
   assert.ok(html.includes('class="graph-top-bar"'), "must arrange graph hint and toolbar in non-overlapping top flex bar");
   assert.ok(html.includes("formatGraphPath"), "must format node paths cleanly along slash boundaries");
   assert.ok(html.includes('id="dxr-arrow-danger"'), "must define directional SVG arrow markers");
+
+  const scripts = [...html.matchAll(/<script(?:\s+[^>]*)?>([\s\S]*?)<\/script>/g)];
+  const executableJs = scripts.filter((m) => !m[0].includes('type="application/json"')).map((m) => m[1]);
+  assert.equal(executableJs.length, 1, "must contain exactly one executable inline script block");
+  assert.doesNotThrow(() => new vm.Script(executableJs[0]), "generated inline Studio JavaScript must parse with zero syntax errors");
 });

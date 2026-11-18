@@ -2,6 +2,11 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.2.2] - 2026-11-18
+
+### Fixed
+- **Template Backslash Escaping & VM Syntax Guard**: Fixed backslash escaping inside `formatGraphPath()` in `renderHtmlStudio()` and added a `node:vm` `new vm.Script()` compilation guard to `tests/renderers.test.mjs`.
+
 ## [2.2.1] - 2026-11-18
 
 ### Improved Blast-Radius Initial Spacing & Viewport Balance
