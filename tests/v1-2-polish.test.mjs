@@ -17,7 +17,7 @@ test("v1.2.0 SVG card scopes CSS custom properties to .dxr-svg-root (preventing 
 
   const html = renderHtmlStudio(report);
   assert.ok(html.includes('html[data-theme="light"]'));
-  assert.ok(html.includes("computeFitScale"));
+  assert.ok(html.includes("fitGraphViewport"));
 });
 
 test("v1.2.0 installPrePushHook creates .git/hooks/pre-push and protects custom hooks without --force", () => {

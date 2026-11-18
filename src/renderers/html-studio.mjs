@@ -466,8 +466,45 @@ export function renderHtmlStudio(report, options = {}) {
     background-size: 24px 24px;
     min-height: 540px;
     cursor: grab;
+    user-select: none;
+    touch-action: none;
   }
-  .graph-stage:active { cursor: grabbing; }
+  .graph-stage.panning { cursor: grabbing; }
+  .g-node, .g-lane {
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .g-node:hover .node-box, .g-lane:hover .lane-pill {
+    stroke-width: 2px;
+    filter: drop-shadow(0 6px 14px rgba(20, 20, 19, 0.11));
+  }
+  .g-node:hover .drag-grip, .g-lane:hover .drag-grip { opacity: 0.85; }
+  .g-node.dragging, .g-lane.dragging { cursor: grabbing; }
+  .g-node.dragging .node-box {
+    stroke-width: 2.2px;
+    filter: drop-shadow(0 14px 26px rgba(20, 20, 19, 0.2));
+  }
+  .g-node .node-ring { opacity: 0; pointer-events: none; transition: opacity 0.14s; }
+  .g-node.selected .node-ring { opacity: 1; }
+  .g-edge {
+    transition: opacity 0.14s, stroke-width 0.14s;
+    pointer-events: none;
+  }
+  .graph-hint {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 10;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--fg-muted);
+    box-shadow: var(--shadow);
+    pointer-events: none;
+  }
   .graph-toolbar {
     position: absolute;
     bottom: 14px;
@@ -589,10 +626,13 @@ export function renderHtmlStudio(report, options = {}) {
   <section id="panel-graph" class="view-panel">
     <div class="graph-layout">
       <div class="graph-stage" id="graph-stage">
+        <div class="graph-hint mono">✥ Drag any node card or lane header freely · Scroll wheel to zoom</div>
         <div class="graph-toolbar">
-          <button class="btn" id="zoom-in">+</button>
-          <button class="btn" id="zoom-out">−</button>
-          <button class="btn" id="zoom-reset">Fit View</button>
+          <button class="btn" id="zoom-in" title="Zoom in">+</button>
+          <button class="btn" id="zoom-out" title="Zoom out">−</button>
+          <button class="btn" id="toggle-snap" title="Snap dragged nodes to 12px grid (or hold Shift)">Snap: Off</button>
+          <button class="btn" id="zoom-reset" title="Fit camera to current node layout">Fit View</button>
+          <button class="btn" id="layout-reset" title="Restore initial swimlane arrangement">Reset Layout</button>
         </div>
         <div class="graph-legend mono">
           <span><strong style="color:var(--sage)">●</strong> Changed</span>
@@ -603,7 +643,7 @@ export function renderHtmlStudio(report, options = {}) {
         <svg id="blast-svg" width="100%" height="100%"></svg>
       </div>
       <aside class="inspector-pane" id="node-inspector">
-        <div style="color:var(--fg-muted);font-size:13px;line-height:1.6">Select any module node in the Blast-Radius Map to inspect modified symbols, downstream untouched callers, and silent hazard flags.</div>
+        <div style="color:var(--fg-muted);font-size:13px;line-height:1.6">Click any module node to inspect modified symbols, downstream untouched callers, and silent hazard flags. Drag any node card or lane pill to rearrange the architecture map freely.</div>
       </aside>
     </div>
   </section>
@@ -956,85 +996,354 @@ export function renderHtmlStudio(report, options = {}) {
     );
   }
 
-  // TAB 2: Interactive SVG Blast-Radius Map
-  let panX = 28, panY = 26, scale = 1, graphAutoFitted = false;
-  function computeFitScale(laneCount) {
-    const stageEl = document.getElementById("graph-stage");
-    const availW = (stageEl?.clientWidth || 1000) - 56;
-    const neededW = Math.max(285, laneCount * 285);
-    return Math.max(0.55, Math.min(1, Number((availW / neededW).toFixed(2))));
-  }
-  function renderGraph() {
-    const svg = document.getElementById("blast-svg");
-    const nodes = report.blastRadius.nodes.filter((n) => !n.isGenerated);
-    const lanes = [
+  // TAB 2: Interactive Draggable SVG Blast-Radius Map
+  const NODE_W = 244;
+  const NODE_H = 54;
+  const LANE_W = 296;
+  let panX = 28, panY = 48, scale = 1;
+  let snapToGrid = false;
+  let selectedNodeId = null;
+  let hoveredNodeId = null;
+  let graphInitialized = false;
+  const nodePositions = new Map();
+  const lanePositions = new Map();
+
+  function getActiveLanes(nodes) {
+    return [
       { key: "caller", label: "UNTOUCHED CALLERS", filter: (n) => n.role === "untouched-caller" },
       { key: "entry", label: "ENTRYPOINTS & API", filter: (n) => n.role === "changed" && n.layer === "entrypoint" },
       { key: "core", label: "CORE LOGIC", filter: (n) => n.role === "changed" && (n.layer === "core" || n.layer === "ui") },
       { key: "data", label: "DATA, CONFIG & TESTS", filter: (n) => n.role === "changed" && !["entrypoint", "core", "ui"].includes(n.layer) },
     ].filter((l) => nodes.some(l.filter));
+  }
 
-    if (!graphAutoFitted && lanes.length > 0) {
-      scale = computeFitScale(lanes.length);
-      graphAutoFitted = true;
-    }
-
-    const pos = new Map();
-    const laneW = 285;
-    const nodeW = 232;
-    const nodeH = 50;
-
-    let laneHeaders = "";
+  function computeDefaultGraphLayout() {
+    nodePositions.clear();
+    lanePositions.clear();
+    const nodes = report.blastRadius.nodes.filter((n) => !n.isGenerated);
+    const lanes = getActiveLanes(nodes);
     lanes.forEach((lane, lIdx) => {
-      const lx = 24 + lIdx * laneW;
-      laneHeaders += \`<text x="\${lx}" y="22" fill="var(--fg-muted)" font-size="10.5" font-weight="700" letter-spacing="0.5" class="mono">\${lane.label}</text>\`;
-      const laneNodes = nodes.filter(lane.filter).slice(0, 14);
+      const lx = 24 + lIdx * LANE_W;
+      const laneNodes = nodes.filter(lane.filter).slice(0, 16);
+      lanePositions.set(lane.key, {
+        x: lx,
+        y: 12,
+        label: lane.label,
+        nodeIds: laneNodes.map((n) => n.id),
+      });
       laneNodes.forEach((n, nIdx) => {
-        pos.set(n.id, { x: lx, y: 42 + nIdx * 66, node: n });
+        nodePositions.set(n.id, {
+          x: lx,
+          y: 50 + nIdx * 72,
+          laneKey: lane.key,
+          node: n,
+        });
       });
     });
+  }
 
-    let edgesSvg = "";
-    for (const edge of report.blastRadius.edges) {
-      const a = pos.get(edge.from);
-      const b = pos.get(edge.to);
-      if (!a || !b) continue;
-      const x1 = a.x < b.x ? a.x + nodeW : a.x;
-      const y1 = a.y + nodeH / 2;
-      const x2 = a.x < b.x ? b.x : b.x + nodeW;
-      const y2 = b.y + nodeH / 2;
-      const cx = (x1 + x2) / 2;
-      const stroke = edge.kind === "breaking-caller" ? "var(--danger)" : edge.kind.includes("caller") ? "var(--indigo)" : "var(--fg-dim)";
-      const dash = edge.kind.includes("caller") ? 'stroke-dasharray="5 4"' : "";
-      edgesSvg += \`<path d="M \${x1} \${y1} C \${cx} \${y1}, \${cx} \${y2}, \${x2} \${y2}" fill="none" stroke="\${stroke}" stroke-width="1.75" \${dash} opacity="0.86" />\`;
+  function fitGraphViewport() {
+    const stageEl = document.getElementById("graph-stage");
+    const availW = Math.max(320, (stageEl?.clientWidth || 1000) - 56);
+    const availH = Math.max(300, (stageEl?.clientHeight || 540) - 110);
+    if (nodePositions.size === 0) {
+      panX = 28;
+      panY = 48;
+      scale = 1;
+      applyViewportTransform();
+      return;
+    }
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const p of lanePositions.values()) {
+      minX = Math.min(minX, p.x);
+      minY = Math.min(minY, p.y);
+      maxX = Math.max(maxX, p.x + 210);
+      maxY = Math.max(maxY, p.y + 28);
+    }
+    for (const p of nodePositions.values()) {
+      minX = Math.min(minX, p.x);
+      minY = Math.min(minY, p.y);
+      maxX = Math.max(maxX, p.x + NODE_W);
+      maxY = Math.max(maxY, p.y + NODE_H);
+    }
+    const contentW = Math.max(260, maxX - minX);
+    const contentH = Math.max(180, maxY - minY);
+    scale = Math.max(0.45, Math.min(1, Number(Math.min(availW / contentW, availH / contentH).toFixed(2))));
+    panX = Math.round(28 - minX * scale);
+    panY = Math.round(46 - minY * scale);
+    applyViewportTransform();
+  }
+
+  function applyViewportTransform() {
+    document.getElementById("viewport")?.setAttribute("transform", \`translate(\${panX},\${panY}) scale(\${scale})\`);
+  }
+
+  function computeSmartEdgePath(a, b) {
+    const acx = a.x + NODE_W / 2;
+    const acy = a.y + NODE_H / 2;
+    const bcx = b.x + NODE_W / 2;
+    const bcy = b.y + NODE_H / 2;
+    const dx = bcx - acx;
+    const dy = bcy - acy;
+
+    if (Math.abs(dx) > NODE_W * 0.72) {
+      if (dx > 0) {
+        const x1 = a.x + NODE_W;
+        const y1 = acy;
+        const x2 = b.x - 4;
+        const y2 = bcy;
+        const span = Math.max(44, Math.min(160, Math.abs(x2 - x1) * 0.5));
+        return \`M \${x1} \${y1} C \${x1 + span} \${y1}, \${x2 - span} \${y2}, \${x2} \${y2}\`;
+      }
+      const x1 = a.x;
+      const y1 = acy;
+      const x2 = b.x + NODE_W + 4;
+      const y2 = bcy;
+      const span = Math.max(44, Math.min(160, Math.abs(x2 - x1) * 0.5));
+      return \`M \${x1} \${y1} C \${x1 - span} \${y1}, \${x2 + span} \${y2}, \${x2} \${y2}\`;
     }
 
+    if (dy >= 0) {
+      const x1 = acx;
+      const y1 = a.y + NODE_H;
+      const x2 = bcx;
+      const y2 = b.y - 4;
+      const vSpan = Math.max(26, Math.min(110, Math.abs(y2 - y1) * 0.5));
+      return \`M \${x1} \${y1} C \${x1} \${y1 + vSpan}, \${x2} \${y2 - vSpan}, \${x2} \${y2}\`;
+    }
+    const x1 = acx;
+    const y1 = a.y;
+    const x2 = bcx;
+    const y2 = b.y + NODE_H + 4;
+    const vSpan = Math.max(26, Math.min(110, Math.abs(y2 - y1) * 0.5));
+    return \`M \${x1} \${y1} C \${x1} \${y1 - vSpan}, \${x2} \${y2 + vSpan}, \${x2} \${y2}\`;
+  }
+
+  function updateGraphEdgesAndSelection() {
+    const svg = document.getElementById("blast-svg");
+    if (!svg) return;
+    const focusId = hoveredNodeId || selectedNodeId;
+    svg.querySelectorAll(".g-edge").forEach((pathEl) => {
+      const fromId = pathEl.dataset.from;
+      const toId = pathEl.dataset.to;
+      const a = nodePositions.get(fromId);
+      const b = nodePositions.get(toId);
+      if (!a || !b) return;
+      pathEl.setAttribute("d", computeSmartEdgePath(a, b));
+      if (!focusId) {
+        pathEl.setAttribute("opacity", "0.86");
+        pathEl.setAttribute("stroke-width", "1.75");
+      } else if (fromId === focusId || toId === focusId) {
+        pathEl.setAttribute("opacity", "1");
+        pathEl.setAttribute("stroke-width", "2.5");
+      } else {
+        pathEl.setAttribute("opacity", "0.22");
+        pathEl.setAttribute("stroke-width", "1.5");
+      }
+    });
+    svg.querySelectorAll(".g-node").forEach((nodeEl) => {
+      nodeEl.classList.toggle("selected", nodeEl.dataset.nodeId === selectedNodeId);
+    });
+  }
+
+  function renderGripDots(x, y) {
+    return \`<g class="drag-grip" opacity="0.36" fill="var(--fg-muted)">
+      <circle cx="\${x}" cy="\${y}" r="1.25"/><circle cx="\${x + 4.5}" cy="\${y}" r="1.25"/>
+      <circle cx="\${x}" cy="\${y + 4.5}" r="1.25"/><circle cx="\${x + 4.5}" cy="\${y + 4.5}" r="1.25"/>
+      <circle cx="\${x}" cy="\${y + 9}" r="1.25"/><circle cx="\${x + 4.5}" cy="\${y + 9}" r="1.25"/>
+    </g>\`;
+  }
+
+  function renderGraph() {
+    const svg = document.getElementById("blast-svg");
+    if (!graphInitialized) {
+      computeDefaultGraphLayout();
+      graphInitialized = true;
+      fitGraphViewport();
+    }
+
+    let lanesSvg = "";
+    for (const [laneKey, lp] of lanePositions) {
+      const pillW = Math.max(138, lp.label.length * 7.4 + 34);
+      lanesSvg += \`
+        <g class="g-lane" data-lane-key="\${esc(laneKey)}" transform="translate(\${lp.x}, \${lp.y})">
+          <title>Drag to move entire \${esc(lp.label)} column</title>
+          <rect class="lane-pill" width="\${pillW}" height="24" rx="12" fill="var(--bg-elev)" stroke="var(--border-strong)" stroke-width="1" />
+          \${renderGripDots(11, 7.5)}
+          <text x="23" y="15.5" fill="var(--fg-muted)" font-size="10" font-weight="700" letter-spacing="0.5" class="mono">\${esc(lp.label)}</text>
+        </g>
+      \`;
+    }
+
+    let edgesSvg = "";
+    report.blastRadius.edges.forEach((edge, idx) => {
+      const a = nodePositions.get(edge.from);
+      const b = nodePositions.get(edge.to);
+      if (!a || !b) return;
+      const isBreaking = edge.kind === "breaking-caller";
+      const isCaller = edge.kind.includes("caller");
+      const stroke = isBreaking ? "var(--danger)" : isCaller ? "var(--indigo)" : "var(--fg-dim)";
+      const marker = isBreaking ? "url(#dxr-arrow-danger)" : isCaller ? "url(#dxr-arrow-indigo)" : "url(#dxr-arrow-dim)";
+      const dash = isCaller ? 'stroke-dasharray="5 4"' : "";
+      edgesSvg += \`<path class="g-edge" data-edge-idx="\${idx}" data-from="\${esc(edge.from)}" data-to="\${esc(edge.to)}" d="\${computeSmartEdgePath(a, b)}" fill="none" stroke="\${stroke}" stroke-width="1.75" \${dash} marker-end="\${marker}" opacity="0.86" />\`;
+    });
+
     let nodesSvg = "";
-    for (const [id, p] of pos) {
+    for (const [id, p] of nodePositions) {
       const n = p.node;
       const stroke =
         n.signatureBreakCount > 0 ? "var(--danger)" :
         n.role === "untouched-caller" ? "var(--indigo)" :
         n.impactScore >= 55 ? "var(--accent)" : "var(--sage)";
       const dash = n.role === "untouched-caller" ? 'stroke-dasharray="4 3"' : "";
-      const shortName = n.path.length > 27 ? "…" + n.path.slice(-26) : n.path;
+      const shortName = n.path.length > 26 ? "…" + n.path.slice(-25) : n.path;
       const sub = n.role === "untouched-caller"
         ? (n.signatureBreakCount > 0 ? "⚠ calls broken signature" : "untouched downstream caller")
         : \`+\${n.additions}/-\${n.deletions} · impact \${n.impactScore}\`;
 
       nodesSvg += \`
-        <g class="g-node" data-node-id="\${esc(id)}" transform="translate(\${p.x}, \${p.y})" style="cursor:pointer">
-          <rect width="\${nodeW}" height="\${nodeH}" rx="10" fill="var(--bg-card)" stroke="\${stroke}" stroke-width="1.5" \${dash} />
-          <text x="12" y="20" fill="var(--fg)" font-size="11.5" font-weight="600" class="mono">\${esc(shortName)}</text>
-          <text x="12" y="37" fill="var(--fg-muted)" font-size="10.5" class="mono">\${esc(sub)}</text>
+        <g class="g-node\${selectedNodeId === id ? " selected" : ""}" data-node-id="\${esc(id)}" transform="translate(\${p.x}, \${p.y})">
+          <title>\${esc(n.path)} — Drag freely to reposition · Click to inspect</title>
+          <rect class="node-ring" x="-3.5" y="-3.5" width="\${NODE_W + 7}" height="\${NODE_H + 7}" rx="14" fill="none" stroke="var(--accent)" stroke-opacity="0.5" stroke-width="2.2" />
+          <rect class="node-box" width="\${NODE_W}" height="\${NODE_H}" rx="11" fill="var(--bg-card)" stroke="\${stroke}" stroke-width="1.5" \${dash} />
+          \${renderGripDots(NODE_W - 16, 12)}
+          <text x="13" y="22" fill="var(--fg)" font-size="11.5" font-weight="600" class="mono">\${esc(shortName)}</text>
+          <text x="13" y="39" fill="var(--fg-muted)" font-size="10.5" class="mono">\${esc(sub)}</text>
         </g>
       \`;
     }
 
-    svg.innerHTML = \`<g id="viewport" transform="translate(\${panX},\${panY}) scale(\${scale})">\${laneHeaders}\${edgesSvg}\${nodesSvg}</g>\`;
+    svg.innerHTML = \`
+      <defs>
+        <marker id="dxr-arrow-danger" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--danger)" />
+        </marker>
+        <marker id="dxr-arrow-indigo" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--indigo)" />
+        </marker>
+        <marker id="dxr-arrow-dim" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--fg-dim)" />
+        </marker>
+      </defs>
+      <g id="viewport" transform="translate(\${panX},\${panY}) scale(\${scale})">
+        <g id="lanes-layer">\${lanesSvg}</g>
+        <g id="edges-layer">\${edgesSvg}</g>
+        <g id="nodes-layer">\${nodesSvg}</g>
+      </g>
+    \`;
 
+    bindGraphNodeAndLaneDrag(svg);
+    updateGraphEdgesAndSelection();
+  }
+
+  function snapCoord(v, forceSnap) {
+    return (snapToGrid || forceSnap) ? Math.round(v / 12) * 12 : Math.round(v * 10) / 10;
+  }
+
+  function bindGraphNodeAndLaneDrag(svg) {
+    const nodesLayer = svg.querySelector("#nodes-layer");
+    const nodeDomMap = new Map();
+    svg.querySelectorAll(".g-node").forEach((el) => nodeDomMap.set(el.dataset.nodeId, el));
     svg.querySelectorAll(".g-node").forEach((el) => {
-      el.addEventListener("click", () => inspectNode(el.dataset.nodeId));
+      const nodeId = el.dataset.nodeId;
+      el.addEventListener("pointerenter", () => {
+        hoveredNodeId = nodeId;
+        updateGraphEdgesAndSelection();
+      });
+      el.addEventListener("pointerleave", () => {
+        if (hoveredNodeId === nodeId) {
+          hoveredNodeId = null;
+          updateGraphEdgesAndSelection();
+        }
+      });
+      el.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        const pos = nodePositions.get(nodeId);
+        if (!pos) return;
+        nodesLayer?.appendChild(el);
+        el.setPointerCapture(e.pointerId);
+        el.classList.add("dragging");
+        const originClientX = e.clientX;
+        const originClientY = e.clientY;
+        const originX = pos.x;
+        const originY = pos.y;
+        let moved = false;
+
+        const onMove = (ev) => {
+          const dxScreen = ev.clientX - originClientX;
+          const dyScreen = ev.clientY - originClientY;
+          if (!moved && Math.hypot(dxScreen, dyScreen) >= 4) moved = true;
+          if (!moved) return;
+          pos.x = snapCoord(originX + dxScreen / scale, ev.shiftKey);
+          pos.y = snapCoord(originY + dyScreen / scale, ev.shiftKey);
+          el.setAttribute("transform", \`translate(\${pos.x}, \${pos.y})\`);
+          updateGraphEdgesAndSelection();
+        };
+
+        const onUp = (ev) => {
+          el.removeEventListener("pointermove", onMove);
+          el.removeEventListener("pointerup", onUp);
+          el.removeEventListener("pointercancel", onUp);
+          el.classList.remove("dragging");
+          if (el.hasPointerCapture?.(ev.pointerId)) el.releasePointerCapture(ev.pointerId);
+          if (!moved) {
+            selectedNodeId = nodeId;
+            inspectNode(nodeId);
+            updateGraphEdgesAndSelection();
+          }
+        };
+
+        el.addEventListener("pointermove", onMove);
+        el.addEventListener("pointerup", onUp);
+        el.addEventListener("pointercancel", onUp);
+      });
+    });
+
+    svg.querySelectorAll(".g-lane").forEach((laneEl) => {
+      const laneKey = laneEl.dataset.laneKey;
+      laneEl.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        const lp = lanePositions.get(laneKey);
+        if (!lp) return;
+        laneEl.setPointerCapture(e.pointerId);
+        laneEl.classList.add("dragging");
+        const originClientX = e.clientX;
+        const originClientY = e.clientY;
+        const startLaneX = lp.x;
+        const startLaneY = lp.y;
+        const memberStarts = lp.nodeIds
+          .map((id) => ({ id, pos: nodePositions.get(id), dom: nodeDomMap.get(id) }))
+          .filter((m) => m.pos)
+          .map((m) => ({ ...m, startX: m.pos.x, startY: m.pos.y }));
+
+        const onMove = (ev) => {
+          const dx = (ev.clientX - originClientX) / scale;
+          const dy = (ev.clientY - originClientY) / scale;
+          lp.x = snapCoord(startLaneX + dx, ev.shiftKey);
+          lp.y = snapCoord(startLaneY + dy, ev.shiftKey);
+          laneEl.setAttribute("transform", \`translate(\${lp.x}, \${lp.y})\`);
+          for (const m of memberStarts) {
+            m.pos.x = snapCoord(m.startX + dx, ev.shiftKey);
+            m.pos.y = snapCoord(m.startY + dy, ev.shiftKey);
+            m.dom?.setAttribute("transform", \`translate(\${m.pos.x}, \${m.pos.y})\`);
+          }
+          updateGraphEdgesAndSelection();
+        };
+
+        const onUp = (ev) => {
+          laneEl.removeEventListener("pointermove", onMove);
+          laneEl.removeEventListener("pointerup", onUp);
+          laneEl.removeEventListener("pointercancel", onUp);
+          laneEl.classList.remove("dragging");
+          if (laneEl.hasPointerCapture?.(ev.pointerId)) laneEl.releasePointerCapture(ev.pointerId);
+        };
+
+        laneEl.addEventListener("pointermove", onMove);
+        laneEl.addEventListener("pointerup", onUp);
+        laneEl.addEventListener("pointercancel", onUp);
+      });
     });
   }
 
@@ -1081,22 +1390,68 @@ export function renderHtmlStudio(report, options = {}) {
     });
   }
 
-  // Pan & Zoom handlers
+  // Canvas Pan, Wheel Zoom & Toolbar Controls
   const stage = document.getElementById("graph-stage");
-  let dragging = false, startX = 0, startY = 0;
-  stage.addEventListener("mousedown", (e) => {
-    if (e.target.closest(".g-node") || e.target.closest(".graph-toolbar")) return;
-    dragging = true; startX = e.clientX - panX; startY = e.clientY - panY;
+  let panning = false, panStartX = 0, panStartY = 0;
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest(".g-node") || e.target.closest(".g-lane") || e.target.closest(".graph-toolbar")) return;
+    panning = true;
+    stage.classList.add("panning");
+    stage.setPointerCapture?.(e.pointerId);
+    panStartX = e.clientX - panX;
+    panStartY = e.clientY - panY;
   });
-  window.addEventListener("mousemove", (e) => {
-    if (!dragging) return;
-    panX = e.clientX - startX; panY = e.clientY - startY;
-    document.getElementById("viewport")?.setAttribute("transform", \`translate(\${panX},\${panY}) scale(\${scale})\`);
+  stage.addEventListener("pointermove", (e) => {
+    if (!panning) return;
+    panX = e.clientX - panStartX;
+    panY = e.clientY - panStartY;
+    applyViewportTransform();
   });
-  window.addEventListener("mouseup", () => { dragging = false; });
-  document.getElementById("zoom-in").addEventListener("click", () => { scale = Math.min(2.4, scale + 0.2); renderGraph(); });
-  document.getElementById("zoom-out").addEventListener("click", () => { scale = Math.max(0.4, scale - 0.2); renderGraph(); });
-  document.getElementById("zoom-reset").addEventListener("click", () => { panX = 28; panY = 26; graphAutoFitted = false; renderGraph(); });
+  const endPan = (e) => {
+    if (!panning) return;
+    panning = false;
+    stage.classList.remove("panning");
+    if (stage.hasPointerCapture?.(e.pointerId)) stage.releasePointerCapture(e.pointerId);
+  };
+  stage.addEventListener("pointerup", endPan);
+  stage.addEventListener("pointercancel", endPan);
+
+  stage.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+    const nextScale = Math.max(0.35, Math.min(2.5, Number((scale * factor).toFixed(3))));
+    panX = mx - ((mx - panX) / scale) * nextScale;
+    panY = my - ((my - panY) / scale) * nextScale;
+    scale = nextScale;
+    applyViewportTransform();
+  }, { passive: false });
+
+  document.getElementById("zoom-in").addEventListener("click", () => {
+    scale = Math.min(2.5, Number((scale + 0.18).toFixed(2)));
+    applyViewportTransform();
+  });
+  document.getElementById("zoom-out").addEventListener("click", () => {
+    scale = Math.max(0.35, Number((scale - 0.18).toFixed(2)));
+    applyViewportTransform();
+  });
+  document.getElementById("toggle-snap").addEventListener("click", (e) => {
+    snapToGrid = !snapToGrid;
+    e.currentTarget.textContent = \`Snap: \${snapToGrid ? "12px" : "Off"}\`;
+    e.currentTarget.classList.toggle("btn-soft", snapToGrid);
+  });
+  document.getElementById("zoom-reset").addEventListener("click", () => {
+    fitGraphViewport();
+  });
+  document.getElementById("layout-reset").addEventListener("click", () => {
+    computeDefaultGraphLayout();
+    renderGraph();
+    fitGraphViewport();
+    toast("Layout reset to default swimlanes");
+  });
 
   // TAB 3: Risk Radar
   function renderRisks() {
