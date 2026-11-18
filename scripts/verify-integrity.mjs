@@ -33,8 +33,8 @@ for (const file of mjsFiles) {
   execFileSync(process.execPath, ["--check", file], { stdio: "inherit" });
 }
 
-// 3. Enforce browser isomorphism in src/core and src/analyzers
-for (const isoDir of ["src/core", "src/analyzers"]) {
+// 3. Enforce browser isomorphism in src/core, src/analyzers, and src/renderers
+for (const isoDir of ["src/core", "src/analyzers", "src/renderers"]) {
   const fullIso = join(ROOT, isoDir);
   try {
     const files = collectFiles(fullIso, ".mjs");
