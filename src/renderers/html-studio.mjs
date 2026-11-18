@@ -491,11 +491,20 @@ export function renderHtmlStudio(report, options = {}) {
     transition: opacity 0.14s, stroke-width 0.14s;
     pointer-events: none;
   }
-  .graph-hint {
+  .graph-top-bar {
     position: absolute;
-    top: 14px;
-    left: 14px;
+    top: 12px;
+    left: 12px;
+    right: 12px;
     z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    pointer-events: none;
+  }
+  .graph-hint {
     background: var(--bg-card);
     border: 1px solid var(--border);
     padding: 5px 12px;
@@ -506,10 +515,6 @@ export function renderHtmlStudio(report, options = {}) {
     pointer-events: none;
   }
   .graph-toolbar {
-    position: absolute;
-    bottom: 14px;
-    right: 14px;
-    z-index: 10;
     display: flex;
     gap: 6px;
     background: var(--bg-card);
@@ -517,6 +522,7 @@ export function renderHtmlStudio(report, options = {}) {
     padding: 5px 7px;
     border-radius: 999px;
     box-shadow: var(--shadow);
+    pointer-events: auto;
   }
   .graph-legend {
     position: absolute;
@@ -532,6 +538,7 @@ export function renderHtmlStudio(report, options = {}) {
     gap: 14px;
     flex-wrap: wrap;
     box-shadow: var(--shadow);
+    pointer-events: none;
   }
   .inspector-pane {
     border-left: 1px solid var(--border);
@@ -626,13 +633,15 @@ export function renderHtmlStudio(report, options = {}) {
   <section id="panel-graph" class="view-panel">
     <div class="graph-layout">
       <div class="graph-stage" id="graph-stage">
-        <div class="graph-hint mono">✥ Drag any node card or lane header freely · Scroll wheel to zoom</div>
-        <div class="graph-toolbar">
-          <button class="btn" id="zoom-in" title="Zoom in">+</button>
-          <button class="btn" id="zoom-out" title="Zoom out">−</button>
-          <button class="btn" id="toggle-snap" title="Snap dragged nodes to 12px grid (or hold Shift)">Snap: Off</button>
-          <button class="btn" id="zoom-reset" title="Fit camera to current node layout">Fit View</button>
-          <button class="btn" id="layout-reset" title="Restore initial swimlane arrangement">Reset Layout</button>
+        <div class="graph-top-bar">
+          <div class="graph-hint mono">✥ Drag nodes or lanes · Scroll to zoom</div>
+          <div class="graph-toolbar">
+            <button class="btn" id="zoom-in" title="Zoom in">+</button>
+            <button class="btn" id="zoom-out" title="Zoom out">−</button>
+            <button class="btn" id="toggle-snap" title="Snap dragged nodes to 12px grid (or hold Shift)">Snap: Off</button>
+            <button class="btn" id="zoom-reset" title="Fit camera to current node layout">Fit View</button>
+            <button class="btn" id="layout-reset" title="Restore initial swimlane arrangement">Reset Layout</button>
+          </div>
         </div>
         <div class="graph-legend mono">
           <span><strong style="color:var(--sage)">●</strong> Changed</span>
@@ -1045,10 +1054,10 @@ export function renderHtmlStudio(report, options = {}) {
   function fitGraphViewport() {
     const stageEl = document.getElementById("graph-stage");
     const availW = Math.max(320, (stageEl?.clientWidth || 1000) - 56);
-    const availH = Math.max(300, (stageEl?.clientHeight || 540) - 110);
+    const availH = Math.max(300, (stageEl?.clientHeight || 540) - 130);
     if (nodePositions.size === 0) {
       panX = 28;
-      panY = 48;
+      panY = 66;
       scale = 1;
       applyViewportTransform();
       return;
@@ -1070,7 +1079,7 @@ export function renderHtmlStudio(report, options = {}) {
     const contentH = Math.max(180, maxY - minY);
     scale = Math.max(0.45, Math.min(1, Number(Math.min(availW / contentW, availH / contentH).toFixed(2))));
     panX = Math.round(28 - minX * scale);
-    panY = Math.round(46 - minY * scale);
+    panY = Math.round(66 - minY * scale);
     applyViewportTransform();
   }
 

@@ -2,6 +2,11 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.1.1] - 2026-11-18
+
+### Fixed (Live Browser QA)
+- **Non-Overlapping Graph Chrome Bar**: Anchored `.graph-hint` and `.graph-toolbar` in a responsive top flex row (`.graph-top-bar`) with increased vertical canvas clearance (`66px`), eliminating bottom legend/toolbar overlap on narrower studio panes.
+
 ## [2.1.0] - 2026-11-18
 
 ### Interactive Draggable Blast-Radius Canvas
