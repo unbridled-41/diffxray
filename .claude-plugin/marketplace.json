@@ -1,0 +1,14 @@
+{
+  "name": "diffxray-marketplace",
+  "owner": {
+    "name": "DiffXray Contributors",
+    "url": "https://github.com/unbridled-41"
+  },
+  "plugins": [
+    {
+      "name": "diffxray",
+      "source": "./",
+      "description": "X-ray any Git diff or AI-generated PR: blast-radius caller map, moved-code collapsing & silent-bug radar."
+    }
+  ]
+}

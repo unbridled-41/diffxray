@@ -7,7 +7,7 @@ const ROOT = process.cwd();
 function collectFiles(dir, ext = ".mjs") {
   const out = [];
   for (const entry of readdirSync(dir)) {
-    if (entry === "node_modules" || entry === ".git" || entry === ".tmp") continue;
+    if (entry === "node_modules" || entry === ".git" || entry === ".tmp" || entry === "dist") continue;
     const full = join(dir, entry);
     const st = statSync(full);
     if (st.isDirectory()) {

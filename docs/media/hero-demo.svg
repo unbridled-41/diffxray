@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 540" width="1040" height="540" role="img" aria-label="DiffXray Interactive Blast-Radius &amp; Silent Risk Demo">
+  <style>
+    .ui { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
+    @keyframes pulseRing {
+      0%, 100% { stroke-opacity: 0.95; opacity: 1; }
+      50% { stroke-opacity: 0.35; opacity: 0.72; }
+    }
+    @keyframes flowDash {
+      to { stroke-dashoffset: -36; }
+    }
+    @keyframes scanGlow {
+      0%, 100% { fill-opacity: 0.12; }
+      50% { fill-opacity: 0.24; }
+    }
+    .flow-edge {
+      stroke-dasharray: 6 6;
+      animation: flowDash 1.8s linear infinite;
+    }
+    .pulse-caller {
+      animation: pulseRing 2.2s ease-in-out infinite;
+    }
+    .risk-glow {
+      animation: scanGlow 2.6s ease-in-out infinite;
+    }
+  </style>
+
+  <!-- App Window Chrome -->
+  <rect width="1040" height="540" rx="14" fill="#0b0d12" stroke="#252d3d" stroke-width="1.5" />
+  <rect x="1" y="1" width="1038" height="44" rx="13" fill="#11151e" />
+  <line x1="0" y1="45" x2="1040" y2="45" stroke="#232b3a" stroke-width="1" />
+  <circle cx="22" cy="23" r="5.5" fill="#ef4444" fill-opacity="0.8" />
+  <circle cx="40" cy="23" r="5.5" fill="#f59e0b" fill-opacity="0.8" />
+  <circle cx="58" cy="23" r="5.5" fill="#10b981" fill-opacity="0.8" />
+  <text x="82" y="27" class="mono" font-size="12" fill="#94a3b8">npx github:unbridled-41/diffxray --pr 418 --open</text>
+
+  <!-- Grade & Telemetry Strip -->
+  <rect x="708" y="10" width="146" height="26" rx="6" fill="#f59e0b" fill-opacity="0.14" stroke="#f59e0b" stroke-width="1" />
+  <text x="781" y="27" text-anchor="middle" class="mono" font-size="11" font-weight="700" fill="#f59e0b">76% NOISE COLLAPSED</text>
+
+  <rect x="864" y="10" width="158" height="26" rx="6" fill="#ef4444" fill-opacity="0.15" stroke="#ef4444" stroke-width="1.2" />
+  <text x="943" y="27" text-anchor="middle" class="mono" font-size="11" font-weight="700" fill="#ef4444">TRUST 38/100 · GRADE D</text>
+
+  <!-- Subheader KPI Row -->
+  <rect x="0" y="46" width="1040" height="40" fill="#0e121a" />
+  <line x1="0" y1="86" x2="1040" y2="86" stroke="#232b3a" stroke-width="1" />
+  <text x="22" y="70" class="ui" font-size="12.5" font-weight="600" fill="#eef2f6">PR #418: Migrate checkout &amp; session auth to v2</text>
+  <text x="340" y="70" class="mono" font-size="11.5" fill="#10b981">~4 min focused review</text>
+  <text x="500" y="70" class="mono" font-size="11.5" fill="#6366f1">3 untouched callers in blast radius</text>
+  <text x="760" y="70" class="mono" font-size="11.5" fill="#ef4444">3 silent AI hazards caught</text>
+
+  <!-- LEFT PANE: GUIDED TOUR & INTRALINE RISK READER -->
+  <rect x="18" y="102" width="536" height="418" rx="10" fill="#121722" stroke="#232b3a" />
+  <text x="34" y="126" class="mono" font-size="11" font-weight="700" fill="#94a3b8">CHAPTER 1 · ENTRYPOINTS &amp; AUTH CONTRACTS (READ FIRST)</text>
+
+  <!-- Collapsed Move Pill -->
+  <rect x="32" y="138" width="508" height="30" rx="6" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-dasharray="4 3" />
+  <text x="44" y="157" class="mono" font-size="11" fill="#f59e0b">⇄ 64 lines moved from src/legacy/billing.ts (96% match) — auto-collapsed</text>
+
+  <!-- File 1 Diff Card -->
+  <rect x="32" y="178" width="508" height="196" rx="8" fill="#0d1017" stroke="#263042" />
+  <rect x="33" y="179" width="506" height="28" rx="7" fill="#161c28" />
+  <text x="45" y="197" class="mono" font-size="11.5" font-weight="600" fill="#f1f5f9">src/api/checkout-controller.ts</text>
+  <text x="445" y="197" class="mono" font-size="11" fill="#ef4444">2 silent risks</text>
+
+  <!-- Diff Lines -->
+  <text x="44" y="223" class="mono" font-size="11.5" fill="#64748b"> 8   export async function postCheckout(req: Request, res: Response) {</text>
+
+  <rect x="33" y="230" width="506" height="21" fill="#ef4444" fill-opacity="0.14" />
+  <text x="44" y="245" class="mono" font-size="11.5" fill="#fca5a5">-9     await requireAuth(req);</text>
+
+  <rect x="33" y="251" width="506" height="21" fill="#ef4444" fill-opacity="0.14" />
+  <rect x="86" y="253" width="42" height="17" rx="3" fill="#ef4444" fill-opacity="0.38" />
+  <text x="44" y="266" class="mono" font-size="11.5" fill="#fca5a5">-10    await recordAuditEvent("checkout.started", req.user.id);</text>
+
+  <rect x="33" y="272" width="506" height="21" fill="#10b981" fill-opacity="0.12" />
+  <text x="44" y="287" class="mono" font-size="11.5" fill="#86efac">+9     recordAuditEvent("checkout.started", req.user?.id);</text>
+
+  <!-- Inline Risk Radar Callout -->
+  <rect x="44" y="302" width="484" height="60" rx="6" fill="#ef4444" class="risk-glow" stroke="#ef4444" stroke-width="1.2" />
+  <text x="56" y="321" class="mono" font-size="11" font-weight="700" fill="#fca5a5">[CRITICAL · auth-guard-removed] Auth guard 'requireAuth(req)' deleted</text>
+  <text x="56" y="338" class="mono" font-size="10.5" fill="#cbd5e1">[HIGH · unawaited-async] Dropped 'await' before recordAuditEvent() — race hazard</text>
+  <rect x="378" y="343" width="140" height="15" rx="3" fill="#1e293b" />
+  <text x="448" y="354" text-anchor="middle" class="mono" font-size="9.5" fill="#38bdf8">Copy Agent Fix Prompt</text>
+
+  <!-- File 2 Signature Card -->
+  <rect x="32" y="384" width="508" height="122" rx="8" fill="#0d1017" stroke="#263042" />
+  <rect x="33" y="385" width="506" height="28" rx="7" fill="#161c28" />
+  <text x="45" y="403" class="mono" font-size="11.5" font-weight="600" fill="#f1f5f9">src/auth/session.ts</text>
+  <text x="368" y="403" class="mono" font-size="11" fill="#818cf8">2 untouched callers hit</text>
+
+  <rect x="33" y="418" width="506" height="21" fill="#ef4444" fill-opacity="0.14" />
+  <text x="44" y="433" class="mono" font-size="11" fill="#fca5a5">-1  export function verifySessionToken(bearer: string) {</text>
+  <rect x="33" y="439" width="506" height="21" fill="#10b981" fill-opacity="0.12" />
+  <rect x="326" y="441" width="152" height="17" rx="3" fill="#10b981" fill-opacity="0.34" />
+  <text x="44" y="454" class="mono" font-size="11" fill="#86efac">+1  export function verifySessionToken(bearer: string, requiredOrgId: string) {</text>
+  <text x="44" y="484" class="mono" font-size="10.5" fill="#f59e0b">⚠ Required params increased (1 → 2) while 2 downstream files were NOT updated</text>
+
+  <!-- RIGHT PANE: LIVE BLAST-RADIUS ARCHITECTURE GRAPH -->
+  <rect x="568" y="102" width="454" height="418" rx="10" fill="#121722" stroke="#232b3a" />
+  <text x="586" y="126" class="mono" font-size="11" font-weight="700" fill="#94a3b8">INTERACTIVE BLAST-RADIUS MAP (WHAT GITHUB DIFF HIDES)</text>
+
+  <!-- Swimlane Labels -->
+  <text x="588" y="154" class="mono" font-size="10" font-weight="700" fill="#64748b">CHANGED IN PR</text>
+  <text x="818" y="154" class="mono" font-size="10" font-weight="700" fill="#818cf8">UNTOUCHED CALLERS</text>
+
+  <!-- Animated Flow Curves -->
+  <path d="M 768 202 C 795 202, 795 192, 816 192" fill="none" stroke="#ef4444" stroke-width="2" class="flow-edge" />
+  <path d="M 768 202 C 795 202, 795 268, 816 268" fill="none" stroke="#ef4444" stroke-width="2" class="flow-edge" />
+  <path d="M 768 292 C 795 292, 795 268, 816 268" fill="none" stroke="#6366f1" stroke-width="1.8" class="flow-edge" />
+  <path d="M 768 382 C 795 382, 795 362, 816 362" fill="none" stroke="#6366f1" stroke-width="1.8" class="flow-edge" />
+  <path d="M 676 228 L 676 266" fill="none" stroke="#475569" stroke-width="1.5" />
+
+  <!-- Changed Nodes (Left Column of Graph) -->
+  <g transform="translate(586, 176)">
+    <rect width="182" height="52" rx="8" fill="#161c28" stroke="#ef4444" stroke-width="1.6" />
+    <text x="11" y="21" class="mono" font-size="11" font-weight="700" fill="#f8fafc">auth/session.ts</text>
+    <text x="11" y="39" class="mono" font-size="10" fill="#fca5a5">signature break (1 → 2)</text>
+  </g>
+
+  <g transform="translate(586, 266)">
+    <rect width="182" height="52" rx="8" fill="#161c28" stroke="#f59e0b" stroke-width="1.5" />
+    <text x="11" y="21" class="mono" font-size="11" font-weight="700" fill="#f8fafc">services/invoice.ts</text>
+    <text x="11" y="39" class="mono" font-size="10" fill="#fcd34d">+22 · moved + modified</text>
+  </g>
+
+  <g transform="translate(586, 356)">
+    <rect width="182" height="52" rx="8" fill="#161c28" stroke="#ef4444" stroke-width="1.5" />
+    <text x="11" y="21" class="mono" font-size="11" font-weight="700" fill="#f8fafc">api/checkout.ts</text>
+    <text x="11" y="39" class="mono" font-size="10" fill="#fca5a5">auth guard removed</text>
+  </g>
+
+  <!-- Untouched Caller Nodes (Right Column of Graph) -->
+  <g transform="translate(816, 166)" class="pulse-caller">
+    <rect width="190" height="54" rx="8" fill="#161c28" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="5 3" />
+    <text x="11" y="21" class="mono" font-size="11" font-weight="700" fill="#f8fafc">routes/enterprise-sso.ts</text>
+    <text x="11" y="39" class="mono" font-size="10" fill="#fca5a5">⚠ calls verifySessionToken(1)</text>
+  </g>
+
+  <g transform="translate(816, 244)" class="pulse-caller">
+    <rect width="190" height="54" rx="8" fill="#161c28" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="5 3" />
+    <text x="11" y="21" class="mono" font-size="11" font-weight="700" fill="#f8fafc">workers/renewal.ts</text>
+    <text x="11" y="39" class="mono" font-size="10" fill="#fca5a5">⚠ untouched · will throw!</text>
+  </g>
+
+  <g transform="translate(816, 336)">
+    <rect width="190" height="54" rx="8" fill="#161c28" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5 3" />
+    <text x="11" y="21" class="mono" font-size="11" font-weight="700" fill="#f8fafc">webhooks/stripe-hook.ts</text>
+    <text x="11" y="39" class="mono" font-size="10" fill="#a5b4fc">↳ untouched downstream caller</text>
+  </g>
+
+  <!-- Bottom Graph Caption Box -->
+  <rect x="586" y="428" width="420" height="76" rx="8" fill="#0d1017" stroke="#263042" />
+  <text x="600" y="450" class="ui" font-size="12" font-weight="600" fill="#eef2f6">Zero API Keys · Zero Dependencies · 100% Local or Client-Side</text>
+  <text x="600" y="470" class="mono" font-size="11" fill="#94a3b8">CLI · Browser Studio (?pr=owner/repo/123) · GitHub Action</text>
+  <text x="600" y="489" class="mono" font-size="11" fill="#10b981">Claude Code · Codex · Cursor · Antigravity · MCP</text>
+</svg>
