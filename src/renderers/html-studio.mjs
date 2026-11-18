@@ -1,9 +1,10 @@
 /**
- * @fileoverview Single-File Offline Interactive HTML X-Ray Studio Renderer.
- * Editorial engineering aesthetic (zero AI-slop gradients/emojis, crisp 1px borders,
- * high-density monospace diff reader, interactive pan/zoom SVG Blast-Radius graph,
- * collapsible moved-code blocks, inline Risk Radar callouts, dark/light toggle,
- * and keyboard shortcuts). Zero external CDN requests.
+ * @fileoverview Single-File Offline Interactive HTML X-Ray Studio Renderer (v2.0 Editorial Design).
+ * Crafted in a warm, tactile Anthropic/Claude research-journal aesthetic:
+ * - Warm Archival Cream (#FAF9F5) default light mode + Warm Espresso (#191816) dark mode
+ * - Literary serif display headings + clean grotesque UI + refined monospace code
+ * - Burnt Terracotta (#D97757), Muted Sage (#4E7A55), Research Slate-Blue (#4A729E), Archival Brick (#C04438)
+ * - Synchronized parent/iframe postMessage theme protocol + zero external CDN dependencies
  */
 
 import { escapeHtml, safeJsonForScript } from "./escape.mjs";
@@ -13,9 +14,10 @@ import { renderSvgCard } from "./svg-card.mjs";
 /**
  * Render a complete, self-contained HTML5 document for an `xrayDiff` report.
  * @param {any} report
+ * @param {{ defaultTheme?: "light" | "dark" }} [options]
  * @returns {string}
  */
-export function renderHtmlStudio(report) {
+export function renderHtmlStudio(report, options = {}) {
   const markdownTour = renderMarkdownTour(report);
   const svgCard = renderSvgCard(report);
   const payload = safeJsonForScript({
@@ -24,62 +26,67 @@ export function renderHtmlStudio(report) {
     svgCard,
   });
 
+  const initialTheme = options.defaultTheme || "light";
   const title = escapeHtml(report.meta?.title || "DiffXray Studio");
 
   return `<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="${initialTheme}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${title} — DiffXray</title>
 <style>
-  :root, [data-theme="dark"] {
-    --bg: #0b0d12;
-    --bg-elev: #11151d;
-    --bg-card: #151a24;
-    --bg-hover: #1b2230;
-    --border: #232a38;
-    --border-strong: #323c50;
-    --fg: #eef2f6;
-    --fg-muted: #94a3b8;
-    --fg-dim: #64748b;
-    --accent: #10b981;
-    --accent-soft: rgba(16, 185, 129, 0.13);
-    --amber: #f59e0b;
-    --amber-soft: rgba(245, 158, 11, 0.14);
-    --danger: #ef4444;
-    --danger-soft: rgba(239, 68, 68, 0.14);
-    --indigo: #6366f1;
-    --indigo-soft: rgba(99, 102, 241, 0.14);
-    --diff-add-bg: rgba(16, 185, 129, 0.10);
-    --diff-add-intra: rgba(16, 185, 129, 0.34);
-    --diff-del-bg: rgba(239, 68, 68, 0.10);
-    --diff-del-intra: rgba(239, 68, 68, 0.34);
-    --shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
+  :root, html[data-theme="light"], [data-theme="light"] {
+    --bg: #FAF9F5;
+    --bg-elev: #F3F0E8;
+    --bg-card: #FFFFFF;
+    --bg-hover: #ECE8DC;
+    --border: #E5E1D5;
+    --border-strong: #CECAC0;
+    --fg: #141413;
+    --fg-muted: #66635B;
+    --fg-dim: #9A968C;
+    --accent: #D97757;
+    --accent-soft: rgba(217, 119, 87, 0.12);
+    --sage: #4E7A55;
+    --sage-soft: rgba(78, 122, 85, 0.11);
+    --amber: #B57B2E;
+    --amber-soft: rgba(181, 123, 46, 0.11);
+    --danger: #C04438;
+    --danger-soft: rgba(192, 68, 56, 0.10);
+    --indigo: #4A729E;
+    --indigo-soft: rgba(74, 114, 158, 0.11);
+    --diff-add-bg: #F1F7F1;
+    --diff-add-intra: #CBE4CE;
+    --diff-del-bg: #FDF2F1;
+    --diff-del-intra: #F5C8C3;
+    --shadow: 0 2px 10px rgba(20, 20, 19, 0.04);
   }
-  html[data-theme="light"], [data-theme="light"] {
-    --bg: #f8fafc;
-    --bg-elev: #ffffff;
-    --bg-card: #ffffff;
-    --bg-hover: #f1f5f9;
-    --border: #e2e8f0;
-    --border-strong: #cbd5e1;
-    --fg: #0f172a;
-    --fg-muted: #475569;
-    --fg-dim: #94a3b8;
-    --accent: #059669;
-    --accent-soft: rgba(5, 150, 105, 0.10);
-    --amber: #d97706;
-    --amber-soft: rgba(217, 119, 6, 0.11);
-    --danger: #dc2626;
-    --danger-soft: rgba(220, 38, 38, 0.10);
-    --indigo: #4f46e5;
-    --indigo-soft: rgba(79, 70, 229, 0.10);
-    --diff-add-bg: #ecfdf5;
-    --diff-add-intra: #a7f3d0;
-    --diff-del-bg: #fef2f2;
-    --diff-del-intra: #fecaca;
-    --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  html[data-theme="dark"], [data-theme="dark"] {
+    --bg: #191816;
+    --bg-elev: #21201D;
+    --bg-card: #262521;
+    --bg-hover: #302E29;
+    --border: #35332E;
+    --border-strong: #4A4740;
+    --fg: #F4F1EA;
+    --fg-muted: #A6A298;
+    --fg-dim: #757168;
+    --accent: #D97757;
+    --accent-soft: rgba(217, 119, 87, 0.16);
+    --sage: #6E9E75;
+    --sage-soft: rgba(110, 158, 117, 0.15);
+    --amber: #D89B48;
+    --amber-soft: rgba(216, 155, 72, 0.15);
+    --danger: #DF685C;
+    --danger-soft: rgba(223, 104, 92, 0.15);
+    --indigo: #78A1CC;
+    --indigo-soft: rgba(120, 161, 204, 0.15);
+    --diff-add-bg: rgba(110, 158, 117, 0.11);
+    --diff-add-intra: rgba(110, 158, 117, 0.32);
+    --diff-del-bg: rgba(223, 104, 92, 0.11);
+    --diff-del-intra: rgba(223, 104, 92, 0.32);
+    --shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
   }
   * { box-sizing: border-box; }
   html, body {
@@ -87,25 +94,29 @@ export function renderHtmlStudio(report) {
     padding: 0;
     background: var(--bg);
     color: var(--fg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
     font-size: 13.5px;
-    line-height: 1.5;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
+  .serif {
+    font-family: "Newsreader", "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, "Songti SC", serif;
+    letter-spacing: -0.018em;
+  }
   code, pre, .mono {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  /* Top Flight Header */
+  /* Top Archival Header */
   .topbar {
     position: sticky;
     top: 0;
     z-index: 40;
     background: var(--bg-elev);
     border-bottom: 1px solid var(--border);
-    padding: 10px 20px;
+    padding: 11px 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -119,9 +130,9 @@ export function renderHtmlStudio(report) {
     min-width: 0;
   }
   .logo-mark {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
     background: var(--accent-soft);
     border: 1px solid var(--accent);
     display: grid;
@@ -131,8 +142,8 @@ export function renderHtmlStudio(report) {
   .title-block { min-width: 0; }
   .title-block h1 {
     margin: 0;
-    font-size: 14.5px;
-    font-weight: 650;
+    font-size: 16.5px;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -141,27 +152,27 @@ export function renderHtmlStudio(report) {
     font-size: 11.5px;
     color: var(--fg-muted);
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
   }
   .top-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     flex-wrap: wrap;
   }
   .pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
     font-weight: 600;
     border: 1px solid var(--border);
     background: var(--bg-card);
   }
-  .pill-grade-A, .pill-grade-B { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .pill-grade-A, .pill-grade-B { color: var(--sage); border-color: var(--sage); background: var(--sage-soft); }
   .pill-grade-C { color: var(--amber); border-color: var(--amber); background: var(--amber-soft); }
   .pill-grade-D, .pill-grade-F { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
 
@@ -170,42 +181,56 @@ export function renderHtmlStudio(report) {
     border: 1px solid var(--border);
     background: var(--bg-card);
     color: var(--fg);
-    padding: 5px 11px;
-    border-radius: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
     font-size: 12px;
     font-weight: 550;
-    transition: background 0.12s, border-color 0.12s;
+    transition: background 0.14s, border-color 0.14s, transform 0.1s;
   }
   .btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
-  .btn-primary { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FAF9F5;
+  }
+  .btn-primary:hover {
+    background: #C66647;
+    border-color: #C66647;
+  }
+  .btn-soft {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 
-  /* Navigation Tabs & KPI Bar */
+  /* Navigation Tabs */
   .subbar {
     position: sticky;
-    top: 49px;
+    top: 53px;
     z-index: 35;
-    background: var(--bg-elev);
+    background: var(--bg);
     border-bottom: 1px solid var(--border);
-    padding: 0 20px;
+    padding: 0 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
   }
-  .tabs { display: flex; gap: 4px; }
+  .tabs { display: flex; gap: 6px; }
   .tab-btn {
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
     color: var(--fg-muted);
-    padding: 11px 14px;
+    padding: 11px 12px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 560;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 7px;
+    transition: color 0.14s;
   }
   .tab-btn:hover { color: var(--fg); }
   .tab-btn.active {
@@ -214,10 +239,11 @@ export function renderHtmlStudio(report) {
   }
   .badge-count {
     font-size: 11px;
-    padding: 1px 6px;
+    padding: 1px 7px;
     border-radius: 999px;
-    background: var(--bg-hover);
+    background: var(--bg-elev);
     border: 1px solid var(--border);
+    color: var(--fg-muted);
   }
   .badge-danger { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
   .badge-indigo { background: var(--indigo-soft); color: var(--indigo); border-color: var(--indigo); }
@@ -229,13 +255,13 @@ export function renderHtmlStudio(report) {
     padding: 6px 0;
   }
   .search-input {
-    background: var(--bg);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     color: var(--fg);
-    padding: 5px 10px;
-    border-radius: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
     font-size: 12px;
-    width: 210px;
+    width: 220px;
   }
   .search-input:focus { outline: none; border-color: var(--accent); }
 
@@ -246,7 +272,7 @@ export function renderHtmlStudio(report) {
   /* Tab 1: Guided Review Layout */
   .tour-grid {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 290px 1fr;
     min-height: calc(100vh - 108px);
   }
   @media (max-width: 920px) {
@@ -255,18 +281,18 @@ export function renderHtmlStudio(report) {
   .sidebar {
     border-right: 1px solid var(--border);
     background: var(--bg-elev);
-    padding: 14px;
+    padding: 16px 14px;
     overflow-y: auto;
     max-height: calc(100vh - 108px);
     position: sticky;
-    top: 108px;
+    top: 98px;
   }
-  .chapter-group { margin-bottom: 16px; }
+  .chapter-group { margin-bottom: 18px; }
   .chapter-hdr {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     color: var(--fg-muted);
     margin-bottom: 6px;
     display: flex;
@@ -277,29 +303,31 @@ export function renderHtmlStudio(report) {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 6px 9px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 12px;
     color: var(--fg);
     margin-bottom: 2px;
+    transition: background 0.12s;
   }
-  .file-nav-item:hover, .file-nav-item.selected { background: var(--bg-hover); }
+  .file-nav-item:hover { background: var(--bg-hover); }
   .file-nav-path {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .stat-add { color: var(--accent); }
+  .stat-add { color: var(--sage); }
   .stat-del { color: var(--danger); }
 
-  .main-reader { padding: 20px 24px 60px; max-width: 1220px; }
+  .main-reader { padding: 24px 28px 64px; max-width: 1220px; }
   .verdict-banner {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
+    border-radius: 14px;
+    padding: 16px 20px;
     margin-bottom: 20px;
+    box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -309,37 +337,39 @@ export function renderHtmlStudio(report) {
   .kpi-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-    gap: 10px;
-    margin-bottom: 22px;
+    gap: 12px;
+    margin-bottom: 26px;
   }
   .kpi-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 11px 14px;
+    border-radius: 12px;
+    padding: 13px 16px;
+    box-shadow: var(--shadow);
   }
-  .kpi-label { font-size: 11px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.03em; }
-  .kpi-val { font-size: 19px; font-weight: 700; margin-top: 3px; }
+  .kpi-label { font-size: 10.5px; font-weight: 600; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-val { font-size: 22px; font-weight: 600; margin-top: 4px; }
 
-  .chapter-section { margin-bottom: 30px; }
+  .chapter-section { margin-bottom: 34px; }
   .chapter-banner {
     border-left: 3px solid var(--accent);
-    padding-left: 12px;
-    margin-bottom: 12px;
+    padding-left: 14px;
+    margin-bottom: 14px;
   }
-  .chapter-banner h2 { margin: 0; font-size: 15px; }
-  .chapter-banner p { margin: 2px 0 0; font-size: 12.5px; color: var(--fg-muted); }
+  .chapter-banner h2 { margin: 0; font-size: 19px; font-weight: 600; }
+  .chapter-banner p { margin: 3px 0 0; font-size: 13px; color: var(--fg-muted); }
 
   /* File Diff Card */
   .file-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 9px;
-    margin-bottom: 16px;
+    border-radius: 12px;
+    margin-bottom: 18px;
     overflow: hidden;
+    box-shadow: var(--shadow);
   }
   .file-card-hdr {
-    padding: 9px 14px;
+    padding: 10px 16px;
     background: var(--bg-elev);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -347,35 +377,35 @@ export function renderHtmlStudio(report) {
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    cursor: pointer;
   }
   .file-tags { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .tag {
     font-size: 11px;
-    padding: 1px 7px;
-    border-radius: 5px;
+    padding: 1px 8px;
+    border-radius: 999px;
     border: 1px solid var(--border);
+    background: var(--bg-card);
     color: var(--fg-muted);
   }
   .tag-caller { color: var(--indigo); border-color: var(--indigo); background: var(--indigo-soft); }
   .tag-risk { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
-  .tag-move { color: var(--amber); border-color: var(--amber); background: var(--amber-soft); }
+  .tag-move { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 
   .diff-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.5;
   }
   .hunk-row td {
-    background: var(--bg-hover);
+    background: var(--bg-elev);
     color: var(--fg-muted);
-    padding: 4px 12px;
+    padding: 4px 14px;
     font-size: 11.5px;
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
-  .diff-line td { padding: 1px 8px; vertical-align: top; }
+  .diff-line td { padding: 1.5px 8px; vertical-align: top; }
   .ln {
     width: 44px;
     text-align: right;
@@ -386,26 +416,28 @@ export function renderHtmlStudio(report) {
   .code-cell {
     white-space: pre-wrap;
     word-break: break-word;
-    padding-left: 10px !important;
+    padding-left: 11px !important;
   }
   .line-add { background: var(--diff-add-bg); }
   .line-del { background: var(--diff-del-bg); }
-  .intra-add { background: var(--diff-add-intra); border-radius: 2px; }
-  .intra-del { background: var(--diff-del-intra); border-radius: 2px; }
+  .intra-add { background: var(--diff-add-intra); border-radius: 2px; padding: 0 1px; }
+  .intra-del { background: var(--diff-del-intra); border-radius: 2px; padding: 0 1px; }
   .move-collapse-row td {
-    background: var(--amber-soft);
-    color: var(--amber);
-    padding: 5px 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 6px 14px;
     font-size: 11.5px;
+    font-weight: 550;
     cursor: pointer;
-    border-top: 1px dashed var(--border);
-    border-bottom: 1px dashed var(--border);
+    border-top: 1px dashed var(--border-strong);
+    border-bottom: 1px dashed var(--border-strong);
   }
   .inline-risk-box {
-    margin: 4px 12px 8px 98px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border-left: 3px solid var(--danger);
+    margin: 6px 14px 8px 98px;
+    padding: 9px 14px;
+    border-radius: 9px;
+    border: 1px solid var(--danger);
+    border-left-width: 3.5px;
     background: var(--danger-soft);
     font-size: 12px;
     display: flex;
@@ -419,7 +451,7 @@ export function renderHtmlStudio(report) {
   .graph-layout {
     display: grid;
     grid-template-columns: 1fr 340px;
-    height: calc(100vh - 108px);
+    height: calc(100vh - 104px);
   }
   @media (max-width: 920px) {
     .graph-layout { grid-template-columns: 1fr; height: auto; }
@@ -427,23 +459,23 @@ export function renderHtmlStudio(report) {
   .graph-stage {
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
-    background-size: 22px 22px;
-    min-height: 520px;
+    background: radial-gradient(circle at 1px 1px, var(--border-strong) 1px, transparent 0);
+    background-size: 24px 24px;
+    min-height: 540px;
     cursor: grab;
   }
   .graph-stage:active { cursor: grabbing; }
   .graph-toolbar {
     position: absolute;
-    top: 14px;
+    bottom: 14px;
     right: 14px;
     z-index: 10;
     display: flex;
     gap: 6px;
-    background: var(--bg-elev);
+    background: var(--bg-card);
     border: 1px solid var(--border);
-    padding: 5px;
-    border-radius: 8px;
+    padding: 5px 7px;
+    border-radius: 999px;
     box-shadow: var(--shadow);
   }
   .graph-legend {
@@ -451,49 +483,51 @@ export function renderHtmlStudio(report) {
     bottom: 14px;
     left: 14px;
     z-index: 10;
-    background: var(--bg-elev);
+    background: var(--bg-card);
     border: 1px solid var(--border);
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
     font-size: 11.5px;
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
+    box-shadow: var(--shadow);
   }
   .inspector-pane {
     border-left: 1px solid var(--border);
     background: var(--bg-elev);
-    padding: 16px;
+    padding: 18px;
     overflow-y: auto;
   }
 
   /* Tab 3 & 4 */
-  .centered-wrap { max-width: 1060px; margin: 0 auto; padding: 24px 20px 60px; }
+  .centered-wrap { max-width: 1040px; margin: 0 auto; padding: 28px 22px 64px; }
   .risk-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
   }
   .export-textarea {
     width: 100%;
     min-height: 280px;
-    background: var(--bg);
+    background: var(--bg-card);
     color: var(--fg);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 12px;
+    padding: 14px;
     font-size: 12px;
   }
   .toast {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 22px;
+    right: 22px;
     background: var(--fg);
     color: var(--bg);
-    padding: 8px 14px;
-    border-radius: 7px;
+    padding: 8px 16px;
+    border-radius: 999px;
     font-size: 12.5px;
     font-weight: 600;
     opacity: 0;
@@ -510,20 +544,20 @@ export function renderHtmlStudio(report) {
   <div class="brand-row">
     <div class="logo-mark" aria-hidden="true">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="2.5" fill="currentColor" style="color:var(--accent)"/>
-        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 2" style="color:var(--accent)"/>
+        <circle cx="8" cy="8" r="2.4" fill="currentColor" style="color:var(--accent)"/>
+        <circle cx="8" cy="8" r="6.1" stroke="currentColor" stroke-width="1.35" stroke-dasharray="2.6 2" style="color:var(--accent)"/>
       </svg>
     </div>
     <div class="title-block">
-      <h1 id="hdr-title"></h1>
+      <h1 id="hdr-title" class="serif"></h1>
       <div class="subtitle-meta mono" id="hdr-meta"></div>
     </div>
   </div>
   <div class="top-actions">
     <span id="hdr-grade" class="pill mono"></span>
     <button class="btn" id="btn-diff-mode" title="Toggle Unified vs Side-by-Side Split diff (s)">Diff: Unified</button>
-    <button class="btn" id="btn-toggle-moves" title="Toggle pure moved code blocks">Hide Pure Moves: ON</button>
-    <button class="btn" id="btn-theme" title="Switch Dark / Light mode">Theme</button>
+    <button class="btn" id="btn-toggle-moves" title="Toggle pure moved code blocks">Moves: Collapsed</button>
+    <button class="btn" id="btn-theme" title="Switch Paper Light / Espresso Dark">Theme</button>
   </div>
 </header>
 
@@ -555,18 +589,18 @@ export function renderHtmlStudio(report) {
         <div class="graph-toolbar">
           <button class="btn" id="zoom-in">+</button>
           <button class="btn" id="zoom-out">−</button>
-          <button class="btn" id="zoom-reset">Reset View</button>
+          <button class="btn" id="zoom-reset">Fit View</button>
         </div>
         <div class="graph-legend mono">
-          <span><strong style="color:var(--accent)">●</strong> Changed Module</span>
-          <span><strong style="color:var(--amber)">●</strong> High Impact / Moved</span>
+          <span><strong style="color:var(--sage)">●</strong> Changed</span>
+          <span><strong style="color:var(--accent)">●</strong> High Impact</span>
           <span><strong style="color:var(--indigo)">◌</strong> Untouched Caller</span>
-          <span><strong style="color:var(--danger)">●</strong> Signature Break / Critical</span>
+          <span><strong style="color:var(--danger)">●</strong> Signature Break</span>
         </div>
         <svg id="blast-svg" width="100%" height="100%"></svg>
       </div>
       <aside class="inspector-pane" id="node-inspector">
-        <div style="color:var(--fg-muted);font-size:12.5px">Click any module node in the Blast-Radius Map to inspect modified symbols, downstream untouched callers, and risk flags.</div>
+        <div style="color:var(--fg-muted);font-size:13px;line-height:1.6">Select any module node in the Blast-Radius Map to inspect modified symbols, downstream untouched callers, and silent hazard flags.</div>
       </aside>
     </div>
   </section>
@@ -620,7 +654,7 @@ export function renderHtmlStudio(report) {
     \`<span>\${esc(report.meta.sourceLabel)}</span>\` +
     \`<span>·</span>\` +
     \`<span>\${report.parsedDiff.stats.totalFiles} files (<span class="stat-add">+\${report.parsedDiff.stats.totalAdditions}</span> / <span class="stat-del">-\${report.parsedDiff.stats.totalDeletions}</span>)</span>\` +
-    (report.meta.prUrl ? \`<span>·</span><a href="\${esc(report.meta.prUrl)}" target="_blank" rel="noopener">View PR ↗</a>\` : "");
+    (report.meta.prUrl ? \`<span>·</span><a href="\${esc(report.meta.prUrl)}" target="_blank" rel="noopener">Open PR ↗</a>\` : "");
 
   const gradeEl = document.getElementById("hdr-grade");
   gradeEl.textContent = \`Trust \${report.riskReport.trustScore}/100 · Grade \${report.riskReport.grade}\`;
@@ -646,16 +680,31 @@ export function renderHtmlStudio(report) {
     btn.addEventListener("click", () => activateTab(btn.dataset.tab));
   });
 
-  // Theme Toggle
+  // Theme Toggle + Parent Frame Sync
+  function setTheme(next) {
+    document.documentElement.dataset.theme = next;
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "diffxray-theme", theme: next }, "*");
+      }
+    } catch (e) {
+      if (e && e.name === "SecurityError") return;
+    }
+  }
   document.getElementById("btn-theme").addEventListener("click", () => {
-    const html = document.documentElement;
-    html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
+    const cur = document.documentElement.dataset.theme;
+    setTheme(cur === "dark" ? "light" : "dark");
+  });
+  window.addEventListener("message", (ev) => {
+    if (ev.data && ev.data.type === "diffxray-set-theme" && (ev.data.theme === "light" || ev.data.theme === "dark")) {
+      document.documentElement.dataset.theme = ev.data.theme;
+    }
   });
 
   // Hide Pure Moves Toggle
   document.getElementById("btn-toggle-moves").addEventListener("click", (e) => {
     hidePureMoves = !hidePureMoves;
-    e.currentTarget.textContent = \`Hide Pure Moves: \${hidePureMoves ? "ON" : "OFF"}\`;
+    e.currentTarget.textContent = \`Moves: \${hidePureMoves ? "Collapsed" : "Expanded"}\`;
     renderTour();
   });
 
@@ -717,14 +766,13 @@ export function renderHtmlStudio(report) {
 
     const callersCount = (file.downstreamCallers || []).length;
     let rowsHtml = "";
-
     const colSpan = splitDiffMode ? 4 : 3;
+
     for (const hunk of file.hunks || []) {
       rowsHtml += \`<tr class="hunk-row mono"><td colspan="\${colSpan}">\${esc(hunk.header)}</td></tr>\`;
       let idx = 0;
       while (idx < hunk.lines.length) {
         const line = hunk.lines[idx];
-        // Collapse pure moved blocks when hidePureMoves is enabled
         if (hidePureMoves && line.moveId && line.isPureMove && !expandedMoves.has(line.moveId + ":" + file.path)) {
           const moveId = line.moveId;
           let count = 0;
@@ -752,6 +800,7 @@ export function renderHtmlStudio(report) {
           while (idx < hunk.lines.length && hunk.lines[idx].type === "del") dels.push(hunk.lines[idx++]);
           while (idx < hunk.lines.length && hunk.lines[idx].type === "add") adds.push(hunk.lines[idx++]);
           const maxLen = Math.max(dels.length, adds.length);
+          const pendingRisks = [];
           for (let k = 0; k < maxLen; k++) {
             const dL = dels[k];
             const aL = adds[k];
@@ -763,11 +812,12 @@ export function renderHtmlStudio(report) {
               : \`<td class="ln"></td><td class="code-cell" style="width:50%"></td>\`;
             rowsHtml += \`<tr class="diff-line mono">\${leftTd}\${rightTd}</tr>\`;
             if (aL && aL.newNumber && findingsByLine.has(aL.newNumber)) {
-              for (const rf of findingsByLine.get(aL.newNumber)) {
-                rowsHtml += \`<tr><td colspan="4"><div class="inline-risk-box"><div><strong>[\${esc(rf.severity.toUpperCase())} · \${esc(rf.ruleId)}]</strong> \${esc(rf.title)}<div style="color:var(--fg-muted);margin-top:2px">\${esc(rf.whyItMatters)}</div></div><button class="btn copy-fix-btn" data-prompt="\${esc(rf.agentFixPrompt)}">Copy Agent Fix Prompt</button></div></td></tr>\`;
-              }
+              pendingRisks.push(...findingsByLine.get(aL.newNumber));
               findingsByLine.delete(aL.newNumber);
             }
+          }
+          for (const rf of pendingRisks) {
+            rowsHtml += \`<tr><td colspan="4"><div class="inline-risk-box"><div><strong>[\${esc(rf.severity.toUpperCase())} · \${esc(rf.ruleId)}]</strong> \${esc(rf.title)}<div style="color:var(--fg-muted);margin-top:2px">\${esc(rf.whyItMatters)}</div></div><button class="btn copy-fix-btn" data-prompt="\${esc(rf.agentFixPrompt)}">Copy Agent Fix Prompt</button></div></td></tr>\`;
           }
           continue;
         }
@@ -787,11 +837,10 @@ export function renderHtmlStudio(report) {
       }
     }
 
-    // Any hunk/file-level findings not attached to a specific added line
     let topAlerts = "";
     for (const [, list] of findingsByLine) {
       for (const rf of list) {
-        topAlerts += \`<div class="inline-risk-box" style="margin:10px 14px"><div><strong>[\${esc(rf.severity.toUpperCase())} · \${esc(rf.ruleId)}]</strong> \${esc(rf.title)} — \${esc(rf.whyItMatters)}</div><button class="btn copy-fix-btn" data-prompt="\${esc(rf.agentFixPrompt)}">Copy Agent Fix Prompt</button></div>\`;
+        topAlerts += \`<div class="inline-risk-box" style="margin:10px 16px"><div><strong>[\${esc(rf.severity.toUpperCase())} · \${esc(rf.ruleId)}]</strong> \${esc(rf.title)} — \${esc(rf.whyItMatters)}</div><button class="btn copy-fix-btn" data-prompt="\${esc(rf.agentFixPrompt)}">Copy Agent Fix Prompt</button></div>\`;
       }
     }
 
@@ -799,13 +848,13 @@ export function renderHtmlStudio(report) {
     return \`
       <article class="file-card" id="\${cardId}">
         <div class="file-card-hdr">
-          <div class="mono" style="font-weight:600">\${esc(file.path)}</div>
+          <div class="mono" style="font-weight:600;font-size:12.5px">\${esc(file.path)}</div>
           <div class="file-tags mono">
             <span class="tag">\${esc(file.layer)}</span>
             <span class="tag">impact \${file.impactScore ?? 0}</span>
             \${file.movedLineRatio > 0 ? \`<span class="tag tag-move">\${file.movedLineRatio}% moved</span>\` : ""}
             \${callersCount > 0 ? \`<span class="tag tag-caller">\${callersCount} untouched caller(s)</span>\` : ""}
-            \${(file.riskFindings || []).length > 0 ? \`<span class="tag tag-risk">\${file.riskFindings.length} risk(s)</span>\` : ""}
+            \${(file.riskFindings || []).length > 0 ? \`<span class="tag tag-risk">\${file.riskFindings.length} hazard(s)</span>\` : ""}
             <span><span class="stat-add">+\${file.additions}</span> / <span class="stat-del">-\${file.deletions}</span></span>
           </div>
         </div>
@@ -831,18 +880,18 @@ export function renderHtmlStudio(report) {
     let readerHtml = \`
       <div class="verdict-banner">
         <div>
-          <div style="font-weight:700;font-size:14.5px">\${esc(report.riskReport.verdict)}</div>
-          <div style="color:var(--fg-muted);font-size:12.5px;margin-top:2px">
-            Guided reading order prioritizes outer contracts &amp; high-blast-radius modules first, collapsing pure code motion and lockfiles.
+          <div class="serif" style="font-weight:600;font-size:17px">\${esc(report.riskReport.verdict)}</div>
+          <div style="color:var(--fg-muted);font-size:13px;margin-top:2px">
+            Chapters are ordered from public contracts and high-blast-radius modules inward, collapsing pure code motion and lockfiles.
           </div>
         </div>
-        <button class="btn btn-primary" id="btn-copy-pr-md">Copy GitHub PR Review Tour</button>
+        <button class="btn btn-primary" id="btn-copy-pr-md">Copy PR Review Tour</button>
       </div>
       <div class="kpi-row">
-        <div class="kpi-card"><div class="kpi-label">Focused Review</div><div class="kpi-val mono">~\${report.blastRadius.stats.estimatedReviewMinutes} min</div></div>
-        <div class="kpi-card"><div class="kpi-label">Noise Collapsed</div><div class="kpi-val mono" style="color:var(--amber)">\${report.moveReport.stats.noiseReductionPercent}%</div></div>
-        <div class="kpi-card"><div class="kpi-label">Untouched Callers</div><div class="kpi-val mono" style="color:var(--indigo)">\${report.blastRadius.stats.untouchedCallerCount}</div></div>
-        <div class="kpi-card"><div class="kpi-label">Silent Hazards</div><div class="kpi-val mono" style="color:\${report.riskReport.counts.total > 0 ? "var(--danger)" : "var(--accent)"}">\${report.riskReport.counts.total}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Focused Review</div><div class="kpi-val serif">~\${report.blastRadius.stats.estimatedReviewMinutes} min</div></div>
+        <div class="kpi-card"><div class="kpi-label">Motion Collapsed</div><div class="kpi-val serif" style="color:var(--accent)">\${report.moveReport.stats.noiseReductionPercent}%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Untouched Callers</div><div class="kpi-val serif" style="color:var(--indigo)">\${report.blastRadius.stats.untouchedCallerCount}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Silent Hazards</div><div class="kpi-val serif" style="color:\${report.riskReport.counts.total > 0 ? "var(--danger)" : "var(--sage)"}">\${report.riskReport.counts.total}</div></div>
       </div>
     \`;
 
@@ -860,7 +909,7 @@ export function renderHtmlStudio(report) {
       readerHtml += \`
         <section class="chapter-section">
           <div class="chapter-banner">
-            <h2>Chapter \${ch.order}: \${esc(ch.title)} <span class="mono" style="font-weight:400;color:var(--fg-muted);font-size:12.5px">(~\${ch.estimatedMinutes} min)</span></h2>
+            <h2 class="serif">Chapter \${ch.order}: \${esc(ch.title)} <span class="mono" style="font-weight:400;color:var(--fg-muted);font-size:12px">(~\${ch.estimatedMinutes} min)</span></h2>
             <p>\${esc(ch.rationale)}</p>
           </div>
           \${visibleFiles.map(renderFileCard).join("")}
@@ -870,7 +919,7 @@ export function renderHtmlStudio(report) {
 
     if (report.blastRadius.skippedMechanical.length > 0 && !filterQuery) {
       readerHtml += \`
-        <details style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px 16px">
+        <details style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:13px 18px">
           <summary style="cursor:pointer;font-weight:600;color:var(--fg-muted)">Skipped Mechanical / Moved / Generated Files (\${report.blastRadius.skippedMechanical.length})</summary>
           <ul class="mono" style="margin:10px 0 0;padding-left:20px;font-size:12px;color:var(--fg-muted)">
             \${report.blastRadius.skippedMechanical.map((s) => \`<li><strong>\${esc(s.path)}</strong> — \${esc(s.reason)} (+\${s.additions}/-\${s.deletions})</li>\`).join("")}
@@ -905,10 +954,10 @@ export function renderHtmlStudio(report) {
   }
 
   // TAB 2: Interactive SVG Blast-Radius Map
-  let panX = 24, panY = 24, scale = 1, graphAutoFitted = false;
+  let panX = 28, panY = 26, scale = 1, graphAutoFitted = false;
   function computeFitScale(laneCount) {
     const stageEl = document.getElementById("graph-stage");
-    const availW = (stageEl?.clientWidth || 1000) - 48;
+    const availW = (stageEl?.clientWidth || 1000) - 56;
     const neededW = Math.max(285, laneCount * 285);
     return Math.max(0.55, Math.min(1, Number((availW / neededW).toFixed(2))));
   }
@@ -929,16 +978,16 @@ export function renderHtmlStudio(report) {
 
     const pos = new Map();
     const laneW = 285;
-    const nodeW = 230;
-    const nodeH = 48;
+    const nodeW = 232;
+    const nodeH = 50;
 
     let laneHeaders = "";
     lanes.forEach((lane, lIdx) => {
-      const lx = 30 + lIdx * laneW;
-      laneHeaders += \`<text x="\${lx}" y="24" fill="var(--fg-dim)" font-size="11" font-weight="700" class="mono">\${lane.label}</text>\`;
+      const lx = 24 + lIdx * laneW;
+      laneHeaders += \`<text x="\${lx}" y="22" fill="var(--fg-muted)" font-size="10.5" font-weight="700" letter-spacing="0.5" class="mono">\${lane.label}</text>\`;
       const laneNodes = nodes.filter(lane.filter).slice(0, 14);
       laneNodes.forEach((n, nIdx) => {
-        pos.set(n.id, { x: lx, y: 46 + nIdx * 66, node: n });
+        pos.set(n.id, { x: lx, y: 42 + nIdx * 66, node: n });
       });
     });
 
@@ -954,7 +1003,7 @@ export function renderHtmlStudio(report) {
       const cx = (x1 + x2) / 2;
       const stroke = edge.kind === "breaking-caller" ? "var(--danger)" : edge.kind.includes("caller") ? "var(--indigo)" : "var(--fg-dim)";
       const dash = edge.kind.includes("caller") ? 'stroke-dasharray="5 4"' : "";
-      edgesSvg += \`<path d="M \${x1} \${y1} C \${cx} \${y1}, \${cx} \${y2}, \${x2} \${y2}" fill="none" stroke="\${stroke}" stroke-width="1.7" \${dash} opacity="0.82" />\`;
+      edgesSvg += \`<path d="M \${x1} \${y1} C \${cx} \${y1}, \${cx} \${y2}, \${x2} \${y2}" fill="none" stroke="\${stroke}" stroke-width="1.75" \${dash} opacity="0.86" />\`;
     }
 
     let nodesSvg = "";
@@ -963,7 +1012,7 @@ export function renderHtmlStudio(report) {
       const stroke =
         n.signatureBreakCount > 0 ? "var(--danger)" :
         n.role === "untouched-caller" ? "var(--indigo)" :
-        n.impactScore >= 55 ? "var(--amber)" : "var(--accent)";
+        n.impactScore >= 55 ? "var(--accent)" : "var(--sage)";
       const dash = n.role === "untouched-caller" ? 'stroke-dasharray="4 3"' : "";
       const shortName = n.path.length > 27 ? "…" + n.path.slice(-26) : n.path;
       const sub = n.role === "untouched-caller"
@@ -972,9 +1021,9 @@ export function renderHtmlStudio(report) {
 
       nodesSvg += \`
         <g class="g-node" data-node-id="\${esc(id)}" transform="translate(\${p.x}, \${p.y})" style="cursor:pointer">
-          <rect width="\${nodeW}" height="\${nodeH}" rx="8" fill="var(--bg-card)" stroke="\${stroke}" stroke-width="1.5" \${dash} />
-          <text x="11" y="19" fill="var(--fg)" font-size="11.5" font-weight="600" class="mono">\${esc(shortName)}</text>
-          <text x="11" y="36" fill="var(--fg-muted)" font-size="10.5" class="mono">\${esc(sub)}</text>
+          <rect width="\${nodeW}" height="\${nodeH}" rx="10" fill="var(--bg-card)" stroke="\${stroke}" stroke-width="1.5" \${dash} />
+          <text x="12" y="20" fill="var(--fg)" font-size="11.5" font-weight="600" class="mono">\${esc(shortName)}</text>
+          <text x="12" y="37" fill="var(--fg-muted)" font-size="10.5" class="mono">\${esc(sub)}</text>
         </g>
       \`;
     }
@@ -993,32 +1042,32 @@ export function renderHtmlStudio(report) {
     const fileObj = report.parsedDiff.files.find((f) => f.path === n.path);
     pane.innerHTML = \`
       <div class="mono" style="font-weight:700;font-size:13px;word-break:break-all">\${esc(n.path)}</div>
-      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
         <span class="tag mono">\${esc(n.role)}</span>
         <span class="tag mono">\${esc(n.layer)}</span>
         <span class="tag mono">impact \${n.impactScore}</span>
       </div>
       \${
         n.modifiedSymbols?.length
-          ? \`<h4 style="margin:16px 0 6px;font-size:11.5px;color:var(--fg-muted)">MODIFIED SYMBOLS</h4>
+          ? \`<h4 style="margin:18px 0 6px;font-size:11px;letter-spacing:0.05em;color:var(--fg-muted)">MODIFIED SYMBOLS</h4>
              <ul class="mono" style="margin:0;padding-left:18px;font-size:12px">\${n.modifiedSymbols.map((s) => \`<li>\${esc(s)}</li>\`).join("")}</ul>\`
           : ""
       }
       \${
         n.downstreamCallers?.length
-          ? \`<h4 style="margin:16px 0 6px;font-size:11.5px;color:var(--indigo)">UNTOUCHED CALLERS (\${n.downstreamCallers.length})</h4>
+          ? \`<h4 style="margin:18px 0 6px;font-size:11px;letter-spacing:0.05em;color:var(--indigo)">UNTOUCHED CALLERS (\${n.downstreamCallers.length})</h4>
              <ul class="mono" style="margin:0;padding-left:18px;font-size:11.5px">\${n.downstreamCallers.map((c) => \`<li><strong>\${esc(c.callerPath)}</strong><br><span style="color:var(--fg-muted)">\${esc(c.reasons.join(", "))}</span></li>\`).join("")}</ul>\`
           : ""
       }
       \${
         fileObj?.riskFindings?.length
-          ? \`<h4 style="margin:16px 0 6px;font-size:11.5px;color:var(--danger)">SILENT HAZARDS (\${fileObj.riskFindings.length})</h4>
+          ? \`<h4 style="margin:18px 0 6px;font-size:11px;letter-spacing:0.05em;color:var(--danger)">SILENT HAZARDS (\${fileObj.riskFindings.length})</h4>
              \${fileObj.riskFindings.map((r) => \`<div style="font-size:12px;margin-bottom:8px"><strong>[\${esc(r.severity)}]</strong> \${esc(r.title)}</div>\`).join("")}\`
           : ""
       }
       \${
         n.role === "changed"
-          ? \`<button class="btn btn-primary" style="margin-top:16px;width:100%" id="jump-diff-btn">Open File in Guided Diff →</button>\`
+          ? \`<button class="btn btn-primary" style="margin-top:18px;width:100%" id="jump-diff-btn">Open in Guided Diff →</button>\`
           : ""
       }
     \`;
@@ -1044,7 +1093,7 @@ export function renderHtmlStudio(report) {
   window.addEventListener("mouseup", () => { dragging = false; });
   document.getElementById("zoom-in").addEventListener("click", () => { scale = Math.min(2.4, scale + 0.2); renderGraph(); });
   document.getElementById("zoom-out").addEventListener("click", () => { scale = Math.max(0.4, scale - 0.2); renderGraph(); });
-  document.getElementById("zoom-reset").addEventListener("click", () => { panX = 24; panY = 24; graphAutoFitted = false; renderGraph(); });
+  document.getElementById("zoom-reset").addEventListener("click", () => { panX = 28; panY = 26; graphAutoFitted = false; renderGraph(); });
 
   // TAB 3: Risk Radar
   function renderRisks() {
@@ -1053,23 +1102,23 @@ export function renderHtmlStudio(report) {
     const allPrompts = report.riskReport.findings.map((f, i) => \`\${i + 1}. \${f.agentFixPrompt}\`).join("\\n");
 
     container.innerHTML = \`
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           \${["all", "critical", "high", "medium", "low"].map((sev) => \`<button class="btn \${riskFilter === sev ? "btn-primary" : ""}" data-sev="\${sev}">\${sev.toUpperCase()}</button>\`).join("")}
         </div>
-        \${report.riskReport.findings.length > 0 ? \`<button class="btn btn-primary" id="copy-all-prompts">Copy All Fix Prompts for Claude Code / Codex</button>\` : ""}
+        \${report.riskReport.findings.length > 0 ? \`<button class="btn btn-soft" id="copy-all-prompts">Copy All Fix Prompts for Claude Code / Codex</button>\` : ""}
       </div>
       \${
         findings.length === 0
-          ? \`<div class="risk-card" style="text-align:center;padding:36px;color:var(--fg-muted)">No silent hazards flagged for this filter.</div>\`
+          ? \`<div class="risk-card serif" style="text-align:center;padding:42px;font-size:16px;color:var(--fg-muted)">No silent hazards flagged for this filter.</div>\`
           : findings.map((f) => \`
               <div class="risk-card">
                 <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-                  <div><span class="tag tag-risk mono">\${esc(f.severity.toUpperCase())}</span> <strong style="margin-left:6px">\${esc(f.title)}</strong></div>
+                  <div><span class="tag tag-risk mono">\${esc(f.severity.toUpperCase())}</span> <strong class="serif" style="margin-left:8px;font-size:15.5px">\${esc(f.title)}</strong></div>
                   <code style="color:var(--fg-muted)">\${esc(f.filePath)}:\${f.lineNumber}</code>
                 </div>
-                <pre class="mono" style="background:var(--bg);padding:8px 10px;border-radius:6px;border:1px solid var(--border);margin:10px 0;overflow-x:auto;font-size:12px">\${esc(f.snippet)}</pre>
-                <div style="color:var(--fg-muted);font-size:12.5px;margin-bottom:10px">\${esc(f.whyItMatters)}</div>
+                <pre class="mono" style="background:var(--bg-elev);padding:10px 12px;border-radius:8px;border:1px solid var(--border);margin:12px 0;overflow-x:auto;font-size:12px">\${esc(f.snippet)}</pre>
+                <div style="color:var(--fg-muted);font-size:13px;margin-bottom:12px">\${esc(f.whyItMatters)}</div>
                 <button class="btn copy-one-prompt" data-prompt="\${esc(f.agentFixPrompt)}">Copy Agent Fix Prompt</button>
               </div>
             \`).join("")
@@ -1089,17 +1138,17 @@ export function renderHtmlStudio(report) {
   function renderExport() {
     const container = document.getElementById("export-container");
     container.innerHTML = \`
-      <h2 style="margin-top:0">Adaptive SVG Blast-Radius Card</h2>
-      <p style="color:var(--fg-muted)">Embed this vector card in Pull Request descriptions, architecture docs, or Slack threads.</p>
-      <div style="overflow-x:auto;margin-bottom:12px">\${svgCard}</div>
-      <div style="display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap">
+      <h2 class="serif" style="margin-top:0;font-size:22px">Adaptive SVG Blast-Radius Card</h2>
+      <p style="color:var(--fg-muted)">Embed this archival vector summary card inside Pull Request descriptions, RFCs, or team threads.</p>
+      <div style="overflow-x:auto;margin-bottom:14px">\${svgCard}</div>
+      <div style="display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap">
         <button class="btn btn-primary" id="dl-svg-btn">Download .svg Card</button>
         <button class="btn" id="copy-svg-btn">Copy Raw SVG</button>
       </div>
-      <h2>GitHub Pull Request Review Tour (Markdown)</h2>
+      <h2 class="serif" style="font-size:22px">GitHub Pull Request Review Tour (Markdown)</h2>
       <p style="color:var(--fg-muted)">Paste directly into your GitHub PR comment or description.</p>
       <textarea class="export-textarea mono" readonly id="md-box"></textarea>
-      <div style="margin-top:10px">
+      <div style="margin-top:12px">
         <button class="btn btn-primary" id="copy-md-box">Copy Markdown to Clipboard</button>
       </div>
     \`;

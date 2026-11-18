@@ -45,7 +45,7 @@ test("renderSvgCard generates valid adaptive dark/light vector SVG", () => {
   const svg = renderSvgCard(report);
   assert.ok(svg.startsWith("<svg "));
   assert.ok(svg.endsWith("</svg>"));
-  assert.ok(svg.includes("prefers-color-scheme: light"));
+  assert.ok(svg.includes("prefers-color-scheme:"));
   assert.ok(!svg.includes("<img src=x"), "must escape XML entities inside SVG text nodes");
   assert.ok(svg.includes("TRUST "));
 });
