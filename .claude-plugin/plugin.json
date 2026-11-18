@@ -1,0 +1,21 @@
+{
+  "name": "diffxray",
+  "version": "1.0.0",
+  "description": "X-ray any Git diff or AI-generated PR: interactive blast-radius graph, cross-file move collapsing, 12 'Quietly Wrong' silent-bug detectors & guided reading tour.",
+  "author": {
+    "name": "DiffXray Contributors",
+    "url": "https://github.com/unbridled-41"
+  },
+  "homepage": "https://unbridled-41.github.io/diffxray/",
+  "repository": "https://github.com/unbridled-41/diffxray",
+  "license": "MIT",
+  "skills": "./skills/",
+  "keywords": [
+    "diff",
+    "code-review",
+    "blast-radius",
+    "pull-requests",
+    "static-analysis",
+    "mcp"
+  ]
+}
