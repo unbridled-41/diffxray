@@ -1,89 +1,109 @@
-<div align="center">
+<p align="left">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/media/logo-dark.svg">
+    <img src="docs/media/logo-light.svg" alt="DiffXray" height="42">
+  </picture>
+</p>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/logo-dark.svg">
-  <img src="docs/media/logo-light.svg" alt="DiffXray" height="64">
-</picture>
+# Read architecture, not alphabetical diffs.
 
-### GitHub diffs list changed files alphabetically. DiffXray shows what actually broke downstream.
+DiffXray turns local `git diff` changes and large Pull Requests into an interactive **Blast-Radius Map**, a **cross-file moved-code tour**, and a deterministic **12-rule silent-regression audit**. It runs locally on Node.js 20+ or 100% client-side in the browser, with zero runtime `node_modules` and zero API keys.
 
-Turn any local `git diff`, branch, or 40-file AI-generated Pull Request into an **interactive Blast-Radius Map**, **collapsed code-move tour**, and **"Quietly Wrong" silent-bug audit** — in under 1.5 seconds, with **zero dependencies** and **zero API keys**.
+**[Live Web Studio](https://unbridled-41.github.io/diffxray/)** · **[Quick Start](#quick-start)** · **[12 Hazard Rules](#deterministic-hazard-rules)** · **[MCP & Agent Skill](#agent-skill--mcp-server)** · **[Architecture](docs/ARCHITECTURE.md)** · **[简体中文](README.zh-CN.md)**
 
-**English** · **[简体中文](README.zh-CN.md)** · **[Try Live Web Studio →](https://unbridled-41.github.io/diffxray/)** · **[Architecture](docs/ARCHITECTURE.md)**
-
-[![CI](https://img.shields.io/github/actions/workflow/status/unbridled-41/diffxray/ci.yml?branch=main&style=flat-square&label=tests&color=4E7A55)](https://github.com/unbridled-41/diffxray/actions/workflows/ci.yml)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-D97757?style=flat-square)](#zero-dependency--privacy-architecture)
-[![Node >=20](https://img.shields.io/badge/node-%E2%89%A520-262521?style=flat-square&logo=nodedotjs)](https://nodejs.org)
-[![Agent Skills](https://img.shields.io/badge/skills.sh-compatible-262521?style=flat-square)](https://skills.sh)
-[![MCP Server](https://img.shields.io/badge/MCP-stdio%20server-4A729E?style=flat-square)](#mcp-server-claude--cursor--codex)
-[![License: MIT](https://img.shields.io/badge/license-MIT-262521?style=flat-square)](LICENSE)
-
-</div>
-
-<p align="center">
+<p>
   <a href="https://unbridled-41.github.io/diffxray/">
-    <img src="docs/media/hero-demo.svg" width="100%" alt="DiffXray interactive Blast-Radius graph, collapsed code moves, and silent hazard radar">
+    <img src="docs/media/showcase-overview.png" width="100%" alt="DiffXray Live Web Studio in Warm Archival Paper theme">
   </a>
 </p>
 
-<p align="center">
-  <b><a href="https://unbridled-41.github.io/diffxray/">Open Live Browser Studio (No Install) →</a></b>
-  &nbsp;·&nbsp;
-  Paste any public GitHub PR URL (or open <a href="https://unbridled-41.github.io/diffxray/?pr=unbridled-41/diffxray/14"><code>?pr=owner/repo/123</code></a>) — 100% client-side.
+---
+
+## Why DiffXray Exists
+
+Coding agents routinely touch 25 to 40 files in a single Pull Request while keeping tests green (`exit 0`). Reviewing those changes in an alphabetical file list hides three structural problems:
+
+1. **Untouched downstream callers.** When `verifySessionToken(token)` adds a required second parameter `orgId`, GitHub shows `session.ts`—never the untouched routes and background workers in your repository that still call it with one argument.
+2. **Code motion mixed with behavioral edits.** Extracting a 120-line billing helper into a new module while changing one discount constant looks like 240 lines of red and green churn. DiffXray pairs cross-file moves with normalized shingle Jaccard matching, collapses pure motion, and highlights only the modified line.
+3. **Silent `exit 0` regressions.** Suites often stay green because a patch added `.skip`, deleted an `expect()` assertion, swallowed an exception inside an empty `catch {}` block, dropped `await`, or removed an auth middleware guard.
+
+> On its first self-check against [PR #13](https://github.com/unbridled-41/diffxray/pull/13), DiffXray's `silent-catch` rule caught a real JSON-RPC `-32700` parse-error bug in its own MCP server before push.
+
+---
+
+## Interactive Blast-Radius Canvas
+
+Every report renders as a single-file offline HTML Studio (or runs directly at **[unbridled-41.github.io/diffxray](https://unbridled-41.github.io/diffxray/)**). Module cards and swimlane headers can be dragged freely across the canvas while dependency curves re-route across ports in real time:
+
+<p>
+  <a href="https://unbridled-41.github.io/diffxray/">
+    <img src="docs/media/showcase-blast-radius.png" width="100%" alt="DiffXray interactive draggable Blast-Radius Map and module inspector">
+  </a>
 </p>
 
----
-
-## Why DiffXray?
-
-Coding agents (Claude Code, Codex, Cursor, Antigravity) now generate 2,000-line, 30-file Pull Requests in minutes. Tests pass (`exit 0`), the diff compiles, and reviewers get stuck in cognitive overload because traditional diff viewers hide three things:
-
-1. **Untouched Downstream Callers (The Hidden Blast Radius)**: When `verifySessionToken(token)` changes to `verifySessionToken(token, orgId)`, GitHub shows you `session.ts` — it **never** shows the 3 untouched routes and background workers that still call it with 1 argument.
-2. **Mechanical Code Motion Mixed with Real Edits**: Moving a 120-line function into a new module while changing 1 discount constant looks like 240 lines of red/green churn. DiffXray pairs cross-file moves via normalized shingle Jaccard matching, collapses pure motion, and highlights **only the in-flight delta**.
-3. **"Quietly Wrong" `exit 0` Regressions**: Agents routinely make failing suites turn green by adding `.skip`, deleting `expect()` assertions, wrapping errors in empty `catch {}` blocks, dropping `await`, widening types to `any`, or removing `requireAuth` middleware.
-
-> **Dogfood proof**: On its very first run against our own [PR #13](https://github.com/unbridled-41/diffxray/pull/13), DiffXray's `silent-catch` detector caught a real JSON-RPC `-32700` parse-error swallowing bug in our MCP server before push.
+- **Guided Review Tour** orders files from outer public contracts and entrypoints inward (`Entrypoints` → `Core Domain` → `Data & Config` → `UI` → `Tests`), with Unified and Side-by-Side Split diff modes (`s`).
+- **Draggable Blast-Radius Map** separates modified modules from untouched workspace callers hit by signature breaks, with cursor-centered wheel zoom, `12px` grid snapping, and non-destructive `Fit View` / `Reset Layout`.
+- **Client-Side URL Deep Links** let you inspect any public GitHub Pull Request or commit directly via `?pr=owner/repo/123` without installing anything.
 
 ---
 
-## Quick Start (30 Seconds)
+## Quick Start
 
-### 1. Run Locally on Any Git Repo (Zero Install via `npx`)
-
-Requires **Node.js 20+**. Zero third-party `node_modules` are downloaded.
+Requires **Node.js 20+**. Nothing is uploaded; third-party runtime dependencies are `0`.
 
 ```bash
-# X-ray uncommitted changes (or current branch vs main) right in your terminal
+# X-ray uncommitted or branch changes in the terminal
 npx github:unbridled-41/diffxray
 
-# Generate & open the single-file offline Interactive HTML Studio
+# Generate and open the standalone Interactive HTML Studio
 npx github:unbridled-41/diffxray main...HEAD --html --open
 
-# X-ray any GitHub Pull Request directly by number, slug, or URL
-npx github:unbridled-41/diffxray --pr 14
+# Inspect any GitHub Pull Request by number, slug, or URL
 npx github:unbridled-41/diffxray --pr vercel-labs/skills#10 --html --open
 
-# Pre-commit / CI gate: exit 1 if any high or critical silent hazard is introduced
+# CI or pre-commit gate: exit 1 if high or critical silent hazards are introduced
 npx github:unbridled-41/diffxray --staged --fail-on high
+
+# Install a zero-Husky local .git/hooks/pre-push safety gate
+npx github:unbridled-41/diffxray --install-hook
 ```
 
-### 2. Install as an Agent Skill (`Claude Code` · `Codex` · `Cursor` · `Antigravity` · `OpenCode`)
+---
 
-Teach your coding agent to verify its own blast radius and eliminate silent regressions *before* finishing a task or opening a PR:
+## Agent Skill, MCP Server & GitHub Action
+
+### 1. Agent Skill (`Claude Code` · `Codex` · `Cursor` · `Antigravity` · `OpenCode`)
+
+Install `SKILL.md` so coding agents audit their own blast radius and silent hazards before opening a PR:
 
 ```bash
 npx skills add unbridled-41/diffxray
 ```
 
-Or install as a native **Claude Code Plugin**:
+Or install as a Claude Code plugin:
 
 ```bash
 claude plugin install diffxray --marketplace unbridled-41/diffxray
 ```
 
-### 3. Add Sticky PR Review Maps via GitHub Actions (5 Lines)
+### 2. Model Context Protocol (STDIO MCP Server)
 
-Create `.github/workflows/diffxray.yml` to automatically post and update a Guided Reading Order + Blast-Radius + Risk Radar map on every Pull Request (see it live on [our own PRs](https://github.com/unbridled-41/diffxray/pulls?q=is%3Apr)):
+Exposes `xray_git_diff`, `xray_patch_text`, and `xray_github_pr` over standard JSON-RPC 2.0 STDIO:
+
+```json
+{
+  "mcpServers": {
+    "diffxray": {
+      "command": "npx",
+      "args": ["-y", "github:unbridled-41/diffxray", "--mcp"]
+    }
+  }
+}
+```
+
+### 3. GitHub Action (Sticky PR Architecture Comment + SARIF)
+
+Add `.github/workflows/diffxray.yml` to post and update a Guided Reading Order + Blast-Radius summary on every Pull Request:
 
 ```yaml
 name: DiffXray PR Review
@@ -103,89 +123,42 @@ jobs:
 
 ---
 
-## Exportable Adaptive SVG PR Cards
+## Exportable Vector PR Cards
 
-Run `npx github:unbridled-41/diffxray --svg diffxray-card.svg` (or click **Tab 4: PR Card & Export** in the HTML Studio) to generate a `prefers-color-scheme` vector card for PR descriptions, architecture reviews, and Slack threads:
+Run `npx github:unbridled-41/diffxray --svg diffxray-card.svg` (or open **Tab 4: PR Card & Export** in the Studio) to export a standalone SVG summary card for Pull Request descriptions and design docs:
 
-<p align="center">
-  <img src="docs/media/sample-card.svg" width="100%" alt="Sample adaptive SVG Blast-Radius Card generated by DiffXray">
+<p>
+  <img src="docs/media/sample-card.svg" width="100%" alt="DiffXray Editorial Vector Summary Card">
 </p>
 
 ---
 
-## What the 12 "Quietly Wrong" Detectors Catch
+## Deterministic Hazard Rules
 
-Every rule is **100% deterministic** (zero LLM hallucinations, `<50ms` execution, OASIS **SARIF v2.1.0** compatible via `--sarif`):
+All 12 detectors use deterministic static and symbol-graph heuristics (`< 50ms` typical runtime, zero LLM prompt variance, OASIS **SARIF v2.1.0** output via `--sarif <path>`, configurable via `.diffxray.json`):
 
-| Rule ID | Severity | What It Catches |
+| Rule ID | Severity | What It Detects |
 | --- | --- | --- |
-| `secret-leak` | **Critical** | Newly added AWS, GitHub, OpenAI/Anthropic/Stripe keys, Slack tokens, private keys, or DB passwords (masked in output). |
-| `injection-risk` | **Critical** | Interpolated SQL template/f-strings, `eval` / `new Function`, `shell: true` command execution, `dangerouslySetInnerHTML`. |
-| `auth-guard-removed` | **Critical** | Deleted authentication/authorization middleware or decorators (`requireAuth`, `verifyToken`, `@UseGuards`, `@login_required`) without replacement. |
-| `breaking-signature` | **High** | Exported function required-param increase, arity reduction, or `async` flip cross-referenced against **untouched workspace callers**. |
-| `weakened-test` | **High** | Added `.skip` / `.only` / `@pytest.mark.skip` or deleted `expect()` / `assert` calls without replacement assertions. |
-| `silent-catch` | **High** | Newly added empty or comment-only `catch {}` / `except: pass` blocks that swallow runtime failures. |
-| `unawaited-async` | **High** | Dropped `await` before async calls inside modified hunks, creating fire-and-forget race conditions. |
-| `type-erosion` | **Medium** | Newly injected `: any`, `as any`, `@ts-ignore`, `# type: ignore`, or `unsafe {}` escape hatches in production code. |
-| `schema-drift` | **Medium** | Prisma / SQL / ORM model files modified without a corresponding migration file in the diff. |
-| `untested-core` | **Medium** | `>= 30` effective lines modified in `core`, `entrypoint`, or `data` layers with `0` test files updated. |
-| `lockfile-drift` | **Low** | Package manifest dependency blocks modified without updating the corresponding lockfile. |
-| `debug-leftover` | **Low** | Leftover `debugger`, `console.log`, `pdb.set_trace()`, `breakpoint()`, or `dbg!()` in non-CLI production modules. |
+| `secret-leak` | Critical | Newly added AWS, GitHub, OpenAI/Anthropic/Stripe keys, Slack tokens, private keys, or DB URI credentials (masked in output). |
+| `injection-risk` | Critical | Interpolated SQL template/f-strings, `eval` / `new Function`, `shell: true` command execution, and unescaped HTML sinks. |
+| `auth-guard-removed` | Critical | Removed authentication or permission middleware (`requireAuth`, `verifyToken`, `@UseGuards`, `@login_required`) without replacement. |
+| `breaking-signature` | High | Exported function required-parameter increase, arity reduction, or `async` contract change affecting untouched workspace callers. |
+| `weakened-test` | High | Added `.skip` / `.only` / `@pytest.mark.skip` or deleted `expect()` / `assert` checks without replacement assertions. |
+| `silent-catch` | High | Newly added empty or comment-only `catch {}` / `except: pass` blocks that swallow runtime errors. |
+| `unawaited-async` | High | Dropped `await` before async calls inside modified hunks. |
+| `type-erosion` | Medium | Newly introduced `: any`, `as any`, `@ts-ignore`, `# type: ignore`, or `unsafe {}` blocks in production modules. |
+| `schema-drift` | Medium | Prisma, SQL, or ORM schema edits without a corresponding migration file in the diff. |
+| `untested-core` | Medium | `>= 30` effective lines changed in `core`, `entrypoint`, or `data` modules with `0` test files updated. |
+| `lockfile-drift` | Low | Package manifest dependency edits without updating the lockfile. |
+| `debug-leftover` | Low | Leftover `debugger`, `console.log`, `pdb.set_trace()`, `breakpoint()`, or `dbg!()` statements in non-CLI code. |
 
 ---
 
-## Multi-Language Support
+## Supported Languages & Architecture
 
-Symbol extraction, signature-break diffing, and module import resolution work out-of-the-box across:
-- **TypeScript & JavaScript** (`.ts`, `.tsx`, `.mts`, `.js`, `.jsx`, `.mjs`, `.cjs`)
-- **Python** (`.py`)
-- **Go** (`.go`)
-- **Rust** (`.rs`)
-- **Java, Kotlin & C#** (`.java`, `.kt`, `.cs`)
-- **SQL & Prisma Schemas** (`.sql`, `.prisma`)
+- **Languages**: TypeScript / JavaScript (`.ts`, `.tsx`, `.mts`, `.js`, `.jsx`, `.mjs`, `.cjs`), Python (`.py`), Go (`.go`), Rust (`.rs`), Java / Kotlin / C# (`.java`, `.kt`, `.cs`), SQL & Prisma (`.sql`, `.prisma`).
+- **Zero-Dependency Isomorphic Core**: `src/core/`, `src/analyzers/`, and `src/renderers/` import zero `node:*` modules and zero npm packages—the exact same ES modules run in the Node CLI, GitHub Action, MCP server, and browser Studio. Verified on Ubuntu, macOS, and Windows in CI.
 
----
+## License
 
-## MCP Server (`Claude Desktop` · `Claude Code` · `Cursor` · `Codex`)
-
-DiffXray includes a built-in, zero-dependency JSON-RPC 2.0 STDIO **Model Context Protocol** server exposing `xray_git_diff`, `xray_github_pr`, and `audit_silent_hazards`:
-
-```json
-{
-  "mcpServers": {
-    "diffxray": {
-      "command": "npx",
-      "args": ["-y", "github:unbridled-41/diffxray", "--mcp"]
-    }
-  }
-}
-```
-
----
-
-## How DiffXray Compares
-
-| Capability | GitHub PR UI | SaaS PR Bots ($15–30/mo) | Static Repo Maps (`floorplan`) | **DiffXray** |
-| --- | --- | --- | --- | --- |
-| **Cost & License** | Free | Paid per seat | MIT | **Free · MIT** |
-| **Works on uncommitted local edits** | No | No | Static files only | **Yes (`< 1.5s`)** |
-| **Zero API keys / Zero telemetry** | N/A | Cloud LLM required | LLM plugin | **100% deterministic & local** |
-| **Untouched downstream caller Blast Radius** | No | Partial | Static | **Yes (interactive graph)** |
-| **Cross-file moved code collapsing + delta** | File rename only | No | N/A | **Yes (shingle Jaccard)** |
-| **Zero-install browser URL PR X-Ray** | Alphabetical list | No | Static demo | **Yes (`?pr=owner/repo/123`)** |
-| **Runtime `node_modules` dependencies** | N/A | Heavy | **0** | **0** |
-
----
-
-## Zero-Dependency & Privacy Architecture
-
-- **Zero Supply-Chain Bloat**: `package.json` ships with `"dependencies": {}`. `scripts/verify-integrity.mjs` enforces zero runtime dependencies and strict browser/Node ESM isomorphism on every CI run across Linux, macOS, and Windows.
-- **100% Private**: Neither the CLI nor the offline HTML Studio ever transmits code or telemetry. Network calls happen only when *you* explicitly pass `--pr` to fetch a GitHub Pull Request.
-
----
-
-## Contributing & License
-
-Contributions, new language symbol patterns, and low-noise risk detectors are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-Released under the [MIT License](LICENSE).
+[MIT](LICENSE) · Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

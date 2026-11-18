@@ -2,6 +2,13 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.2.0] - 2026-11-18
+
+### Editorial README & Authentic Website UI Media Overhaul
+- **Authentic Claude-Editorial Showcase Plates (`docs/media/showcase-overview.png`, `showcase-blast-radius.png`)**: Replaced synthetic wireframe banners in `README.md` and `README.zh-CN.md` with warm stone gallery-framed high-resolution plates captured directly from the live `v2.1` Website and Draggable Blast-Radius Studio UI.
+- **Minimalist Brand Wordmarks & Vector PR Cards (`logo-*.svg`, `svg-card.mjs`, `sample-card.svg`, `hero-demo.svg`)**: Removed badge clutter, fake terminal chrome, and clipped fallback text; added dot-matrix graph canvas, swimlane pills, tactile grip handles, and clean directional arrowheads matching the Web Studio.
+- **Human-Crafted Editorial README Typography**: Removed noisy `shields.io` badge strips and marketing boilerplate across English and Chinese READMEs.
+
 ## [2.1.1] - 2026-11-18
 
 ### Fixed (Live Browser QA)

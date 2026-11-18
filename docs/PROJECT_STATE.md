@@ -6,7 +6,7 @@
 
 - **Repository**: `https://github.com/unbridled-41/diffxray`
 - **Live Web Studio**: `https://unbridled-41.github.io/diffxray/` (`HTTP 200` verified — `v2.1` Draggable Blast-Radius Canvas & Warm Archival Editorial Design System)
-- **Current Version**: `2.1.1`
+- **Current Version**: `2.2.0`
 - **Current Phase**: Phase 4 — 7-Day 1,000-Star Growth Sprint & Continuous Iteration (`Milestone M4`)
 - **Formal `v1.0.0` Public Launch Timestamp**: **`2026-11-18T05:19:58Z`** (Baseline: `0` Stars)
 - **7-Day Assessment Deadline (`T+168h`)**: **`2026-11-25T05:19:58Z`**
@@ -31,7 +31,8 @@
 | PR #21 | #8 | M4 (Active) | Persist `punkpeye/awesome-mcp-servers#19907`, `ruanyf/weekly#13487` & `HelloGitHub#4399` outreach ledger | Merged |
 | PR #23 | #22 | M4 (Active) | `v2.0.0`: Anthropic/Claude-inspired Warm Archival Editorial Showcase Website, synced Paper/Dusk Studio & vector assets | Merged |
 | PR #24 | #8 | M4 (Active) | `v2.0.1`: Live v2.0 QA micro-polish (4-col KPI row, scroll-margin-top, workbench i18n) + Wave 2 outreach ledger (9 live channels) | Merged |
-| PR #26 | #25 | M4 (Active) | `v2.1.0`: Interactive freely draggable Blast-Radius nodes, lane group handles, smart 4-side edge routing & wheel zoom | Merged |
+| PR #26 | #25 | M4 (Active) | `v2.1.0`–`v2.1.1`: Interactive freely draggable Blast-Radius nodes, lane group handles, smart 4-side edge routing & top chrome bar | Merged |
+| PR #29 | #28 | M4 (Active) | `v2.2.0`: Authentic Claude-editorial README showcase plates (`showcase-*.png`), minimalist logos, dot-grid SVG card & calm human-crafted READMEs | Merged |
 
 ---
 
