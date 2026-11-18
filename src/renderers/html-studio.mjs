@@ -1115,7 +1115,7 @@ export function renderHtmlStudio(report, options = {}) {
     }
     const contentW = Math.max(260, maxX - minX);
     const contentH = Math.max(200, maxY - minY);
-    scale = Math.max(0.45, Math.min(1.05, Number(Math.min(availW / contentW, availH / contentH).toFixed(2))));
+    scale = Math.max(0.36, Math.min(1.05, Number(Math.min(availW / contentW, availH / contentH).toFixed(2))));
     const drawnW = contentW * scale;
     const drawnH = contentH * scale;
     panX = Math.round(sidePad + Math.max(0, (availW - drawnW) * 0.5) - minX * scale);

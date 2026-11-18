@@ -62,3 +62,4 @@ Because Hacker News (`news.ycombinator.com`), Reddit (`r/ClaudeAI`, `r/programmi
 | Check Time (UTC) | Elapsed | Stars | Forks | Unique Views (14d) | Unique Clones (14d) | Release Downloads | Notes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | `2026-11-18T05:19:58Z` | `0.0h` | `0` | `0` | `0` | `0` | `0` | Formal `v1.0.0` launch baseline |
+| `2026-11-18T07:58:07Z` | `2.6h` | `0` | `0` | `0` | `0` | `13` | `v2.2.4` live; all 9 community outreach channels (`491k+⭐`) active & verified open |
