@@ -12,8 +12,9 @@ const GENERATED_PATTERNS = [
 ];
 
 const TEST_PATTERNS = [
-  /(^|\/)(__tests__|tests?|spec|e2e|cypress|playwright)\//i,
-  /\.(test|spec|e2e)\.[a-z0-9]+$/i,
+  /(^|\/)(__tests__|tests?|spec|e2e|cypress|playwright|fixtures?)\//i,
+  /\.(test|spec|e2e|fixture)\.[a-z0-9]+$/i,
+  /(^|\/)presets\.[a-z0-9]+$/i,
   /(_test\.go|_test\.py|^test_.*\.py)$/i,
 ];
 

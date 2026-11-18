@@ -37,7 +37,8 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node scripts/verify-integrity.mjs"
+    "check": "node scripts/verify-integrity.mjs",
+    "build:site": "node scripts/build-site.mjs"
   },
   "keywords": [
     "git",

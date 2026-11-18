@@ -9,4 +9,5 @@ Thumbs.db
 diffxray-report.html
 diffxray-card.svg
 diffxray-report.sarif
+site/dist/
 .tmp/
