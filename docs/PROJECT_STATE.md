@@ -5,34 +5,47 @@
 ## 1. Current Status Summary
 
 - **Repository**: `https://github.com/unbridled-41/diffxray`
-- **Live Web Studio Target**: `https://unbridled-41.github.io/diffxray/`
-- **Current Phase**: Phase 2 — Engineering Implementation (Milestone M1)
-- **Formal v1.0.0 Public Launch Timestamp**: *Pending completion of Milestones M1–M3 & pre-launch verification*
-- **Core 7-Day KPI**: `>= 1,000 GitHub Stars` within `168 hours` of formal v1.0.0 public release.
+- **Live Web Studio**: `https://unbridled-41.github.io/diffxray/` (`HTTP 200` verified)
+- **Current Version**: `1.1.0`
+- **Current Phase**: Phase 4 — 7-Day 1,000-Star Growth Sprint & Continuous Iteration (`Milestone M4`)
+- **Formal `v1.0.0` Public Launch Timestamp**: **`2026-11-18T05:19:58Z`** (Baseline: `0` Stars)
+- **7-Day Assessment Deadline (`T+168h`)**: **`2026-11-25T05:19:58Z`**
+- **Core 7-Day KPI**: `>= 1,000 GitHub Stars`
 
 ---
 
-## 2. Milestone & PR Execution Tracker
+## 2. Completed Milestones & PR History
 
-| PR / Issue | Milestone | Module | Status |
-| --- | --- | --- | --- |
-| Issue #1 / PR #1 | M1 | Repository Governance, Market Research, Architecture & Cross-OS CI | In Progress |
-| Issue #2 / PR #2 | M1 | Core Diff Parser, Shingle Move Detector & Multi-Language Blast-Radius Graph | Planned (Next) |
-| Issue #3 / PR #3 | M1 | "Quietly Wrong" Risk Radar (12 Detectors) + Trust Score + SARIF 2.1.0 | Planned |
-| Issue #4 / PR #4 | M2 | Single-File Interactive HTML X-Ray Studio & Adaptive Dark/Light SVG Card | Planned |
-| Issue #5 / PR #5 | M2 | Zero-Dep CLI, ANSI TUI, STDIO MCP Server & Dogfooded GitHub Action | Planned |
-| Issue #6 / PR #6 | M3 | Zero-Install GitHub Pages Live PR Web Studio (`?pr=owner/repo/num`) | Planned |
-| Issue #7 / PR #7 | M3 | Universal `SKILL.md` (`skills.sh`), Claude/Codex Plugins, Hero Media, Bilingual README & `v1.0.0` Release | Planned |
-| Issue #8 / M4 | M4 | 7-Day 1,000-Star Launch Sprint, Ecosystem PRs, Telemetry & Rapid v1.x Iterations | Planned |
+| PR | Issue | Milestone | Summary | Status |
+| --- | --- | --- | --- | --- |
+| PR #9 | #1 | M1 (Closed) | Repository governance, Nov 2026 market research, architecture & 6-job cross-OS CI | Merged |
+| PR #10 | #2 | M1 (Closed) | Isomorphic unified diff parser, logical sub-block move detector & blast-radius engine | Merged |
+| PR #11 | #3 | M1 (Closed) | 12-rule "Quietly Wrong" Risk Radar, Trust Score & OASIS SARIF 2.1.0 exporter | Merged |
+| PR #12 | #4 | M2 (Closed) | Single-file Interactive HTML5 X-Ray Studio, adaptive dark/light SVG cards, Markdown & TUI | Merged |
+| PR #13 | #5 | M2 (Closed) | Zero-dep CLI, workspace scanner, JSON-RPC 2.0 STDIO MCP server & self-dogfooded GitHub Action | Merged |
+| PR #14 | #6 | M3 (Closed) | Zero-install client-side Live PR Web Studio (`?pr=owner/repo/num`) & GitHub Pages deploy | Merged |
+| PR #15 | #7 | M3 (Closed) | Universal `SKILL.md` (`skills.sh`), Claude/Codex plugins, animated hero media, bilingual README & `v1.0.0` release | Merged |
+| PR #17 | #16 | M4 (Active) | `v1.1.0`: Side-by-side Split Diff toggle, `.diffxray.json` policy config, `glama.json`, `server.json`, `Dockerfile`, `llms.txt` & `telemetry.mjs` | In Review |
 
 ---
 
-## 3. Recovery & Verification Commands
+## 3. Next Highest-Priority Tasks (For Continuous / Resumed Execution)
+
+1. **Ecosystem PR Follow-Up**: Monitor review comments and automated CI checks on open PRs to `punkpeye/awesome-mcp-servers` and `appcypher/awesome-mcp-servers`; respond promptly to maintainer requests.
+2. **Community Launch Amplification (`Issue #8`)**: Coordinate authenticated human posting for Hacker News (`Show HN`), Reddit (`r/ClaudeAI`, `r/programming`, `r/vibecoding`), X/Twitter, Linux.do, and V2EX using [`docs/GROWTH_PLAYBOOK.md`](GROWTH_PLAYBOOK.md), then respond to every technical comment/issue within minutes.
+3. **Threshold-Gated Directory Submissions**:
+   - At `>= 100⭐`: Submit to `hesreallyhim/awesome-claude-code` & `VoltAgent/awesome-agent-skills`.
+   - At `T+14d` & `>= 20⭐`: Submit to `heilcheng/awesome-agent-skills`.
+4. **`v1.2.0` Feature Backlog**: GitLab Merge Request (`/-/merge_requests/:id`) & raw commit URL fetching in Web Studio; pre-push Git hook installer (`diffxray --install-hook`).
+
+---
+
+## 4. Recovery & Telemetry Commands
 
 ```bash
-git status
+npm run check
+npm test
+npm run telemetry
 gh issue list --repo unbridled-41/diffxray
 gh pr list --repo unbridled-41/diffxray --state all
-npm test
-npm run check
 ```

@@ -2,6 +2,14 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [1.1.0] - 2026-11-18
+
+### Added
+- **Side-by-Side Split Diff View (`Diff: Unified` ↔ `Diff: Split`, hotkey `s`)** in the Interactive HTML X-Ray Studio with dual-pane intraline highlights.
+- **`.diffxray.json` Team Policy Configuration** (`--config <path>` or auto-discovered in repo root) supporting `ignoreRules`, `ignorePaths`, `minMoveLines`, `minMoveSimilarity`, and `failOn`.
+- **MCP Registry, Glama & AI Discovery Manifests**: Added `glama.json`, `server.json` (`io.github.unbridled-41/diffxray`), zero-dependency `Dockerfile` (`node:22-alpine`), and `llms.txt` (also published at `/diffxray/llms.txt`).
+- **Growth Sprint Telemetry CLI (`npm run telemetry`)** and `docs/GROWTH_LOG.md`.
+
 ## [1.0.0] - 2026-11-18
 
 ### Added

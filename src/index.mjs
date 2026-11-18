@@ -48,7 +48,10 @@ export function xrayDiff(rawDiff, options = {}) {
     symbolReport,
     options.workspaceFiles || []
   );
-  const riskReport = analyzeRisks(parsedDiff, moveReport, symbolReport, blastRadius);
+  const riskReport = analyzeRisks(parsedDiff, moveReport, symbolReport, blastRadius, {
+    ignoreRules: options.ignoreRules,
+    ignorePaths: options.ignorePaths,
+  });
 
   return {
     meta: {

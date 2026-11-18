@@ -61,12 +61,19 @@ const SEVERITY_ORDER = {
  * @param {{ modifiedSymbols: Array<any>, signatureChanges: Array<any> }} symbolReport
  * @param {{ untouchedCallers: Array<any>, stats: any }} blastRadius
  */
-export function analyzeRisks(parsedDiff, moveReport, symbolReport, blastRadius) {
+export function analyzeRisks(parsedDiff, moveReport, symbolReport, blastRadius, policy = {}) {
+  const ignoredRuleSet = new Set(policy.ignoreRules || []);
+  const ignoredPathPrefixes = (policy.ignorePaths || []).map((p) => p.replace(/\\/g, "/"));
   /** @type {Array<any>} */
   const findings = [];
   let seq = 1;
 
   const pushFinding = (f) => {
+    if (ignoredRuleSet.has(f.ruleId)) return;
+    const normPath = (f.filePath || "").replace(/\\/g, "/");
+    if (ignoredPathPrefixes.some((pref) => normPath === pref || normPath.startsWith(pref) || normPath.includes(pref))) {
+      return;
+    }
     findings.push({
       id: `DXR-${String(seq++).padStart(3, "0")}`,
       ...f,
