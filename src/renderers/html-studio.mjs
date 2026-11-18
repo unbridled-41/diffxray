@@ -1006,16 +1006,29 @@ export function renderHtmlStudio(report, options = {}) {
   }
 
   // TAB 2: Interactive Draggable SVG Blast-Radius Map
-  const NODE_W = 244;
-  const NODE_H = 54;
-  const LANE_W = 296;
-  let panX = 28, panY = 48, scale = 1;
+  const NODE_W = 262;
+  const NODE_H = 58;
+  const LANE_W = 342;
+  let panX = 32, panY = 72, scale = 1;
   let snapToGrid = false;
   let selectedNodeId = null;
   let hoveredNodeId = null;
   let graphInitialized = false;
   const nodePositions = new Map();
   const lanePositions = new Map();
+
+  function formatGraphPath(p, maxLen = 30) {
+    const clean = String(p || "").replace(/\\/g, "/");
+    if (clean.length <= maxLen) return clean;
+    const parts = clean.split("/");
+    if (parts.length >= 2) {
+      const twoSeg = parts.slice(-2).join("/");
+      if (twoSeg.length + 2 <= maxLen) return "…/" + twoSeg;
+      const base = parts[parts.length - 1];
+      if (base.length + 2 <= maxLen) return "…/" + base;
+    }
+    return "…" + clean.slice(-(maxLen - 1));
+  }
 
   function getActiveLanes(nodes) {
     return [
@@ -1031,19 +1044,39 @@ export function renderHtmlStudio(report, options = {}) {
     lanePositions.clear();
     const nodes = report.blastRadius.nodes.filter((n) => !n.isGenerated);
     const lanes = getActiveLanes(nodes);
-    lanes.forEach((lane, lIdx) => {
-      const lx = 24 + lIdx * LANE_W;
-      const laneNodes = nodes.filter(lane.filter).slice(0, 16);
+    const grouped = lanes.map((lane) => ({
+      lane,
+      laneNodes: nodes.filter(lane.filter).slice(0, 16),
+    }));
+    const maxRows = Math.max(1, ...grouped.map((g) => g.laneNodes.length));
+    const rowPitch =
+      maxRows <= 2 ? 236 :
+      maxRows === 3 ? 204 :
+      maxRows === 4 ? 156 :
+      maxRows <= 6 ? 124 : 96;
+    const firstY = maxRows <= 3 ? 104 : 78;
+    const totalBodyH = (maxRows - 1) * rowPitch + NODE_H;
+
+    grouped.forEach(({ lane, laneNodes }, lIdx) => {
+      const lx = 28 + lIdx * LANE_W;
       lanePositions.set(lane.key, {
         x: lx,
-        y: 12,
+        y: 16,
         label: lane.label,
         nodeIds: laneNodes.map((n) => n.id),
       });
+      const count = laneNodes.length;
+      const colPitch =
+        count > 1 && count < maxRows
+          ? Math.min(Math.round(rowPitch * 1.22), Math.round(((totalBodyH - NODE_H) / (count - 1)) * 0.76))
+          : rowPitch;
+      const colBodyH = count <= 1 ? NODE_H : (count - 1) * colPitch + NODE_H;
+      const startY = maxRows === 1 ? firstY : Math.round(firstY + (totalBodyH - colBodyH) * 0.5);
+
       laneNodes.forEach((n, nIdx) => {
         nodePositions.set(n.id, {
           x: lx,
-          y: 50 + nIdx * 72,
+          y: Math.round(startY + nIdx * colPitch),
           laneKey: lane.key,
           node: n,
         });
@@ -1053,11 +1086,16 @@ export function renderHtmlStudio(report, options = {}) {
 
   function fitGraphViewport() {
     const stageEl = document.getElementById("graph-stage");
-    const availW = Math.max(320, (stageEl?.clientWidth || 1000) - 56);
-    const availH = Math.max(300, (stageEl?.clientHeight || 540) - 130);
+    const stageW = stageEl?.clientWidth || 1000;
+    const stageH = stageEl?.clientHeight || 560;
+    const sidePad = 32;
+    const topPad = 60;
+    const bottomPad = 56;
+    const availW = Math.max(320, stageW - sidePad * 2);
+    const availH = Math.max(280, stageH - topPad - bottomPad);
     if (nodePositions.size === 0) {
-      panX = 28;
-      panY = 66;
+      panX = sidePad;
+      panY = topPad;
       scale = 1;
       applyViewportTransform();
       return;
@@ -1076,10 +1114,12 @@ export function renderHtmlStudio(report, options = {}) {
       maxY = Math.max(maxY, p.y + NODE_H);
     }
     const contentW = Math.max(260, maxX - minX);
-    const contentH = Math.max(180, maxY - minY);
-    scale = Math.max(0.45, Math.min(1, Number(Math.min(availW / contentW, availH / contentH).toFixed(2))));
-    panX = Math.round(28 - minX * scale);
-    panY = Math.round(66 - minY * scale);
+    const contentH = Math.max(200, maxY - minY);
+    scale = Math.max(0.45, Math.min(1.05, Number(Math.min(availW / contentW, availH / contentH).toFixed(2))));
+    const drawnW = contentW * scale;
+    const drawnH = contentH * scale;
+    panX = Math.round(sidePad + Math.max(0, (availW - drawnW) * 0.5) - minX * scale);
+    panY = Math.round(topPad + Math.max(0, (availH - drawnH) * 0.46) - minY * scale);
     applyViewportTransform();
   }
 
@@ -1205,7 +1245,7 @@ export function renderHtmlStudio(report, options = {}) {
         n.role === "untouched-caller" ? "var(--indigo)" :
         n.impactScore >= 55 ? "var(--accent)" : "var(--sage)";
       const dash = n.role === "untouched-caller" ? 'stroke-dasharray="4 3"' : "";
-      const shortName = n.path.length > 26 ? "…" + n.path.slice(-25) : n.path;
+      const shortName = formatGraphPath(n.path, 30);
       const sub = n.role === "untouched-caller"
         ? (n.signatureBreakCount > 0 ? "⚠ calls broken signature" : "untouched downstream caller")
         : \`+\${n.additions}/-\${n.deletions} · impact \${n.impactScore}\`;
@@ -1215,9 +1255,9 @@ export function renderHtmlStudio(report, options = {}) {
           <title>\${esc(n.path)} — Drag freely to reposition · Click to inspect</title>
           <rect class="node-ring" x="-3.5" y="-3.5" width="\${NODE_W + 7}" height="\${NODE_H + 7}" rx="14" fill="none" stroke="var(--accent)" stroke-opacity="0.5" stroke-width="2.2" />
           <rect class="node-box" width="\${NODE_W}" height="\${NODE_H}" rx="11" fill="var(--bg-card)" stroke="\${stroke}" stroke-width="1.5" \${dash} />
-          \${renderGripDots(NODE_W - 16, 12)}
-          <text x="13" y="22" fill="var(--fg)" font-size="11.5" font-weight="600" class="mono">\${esc(shortName)}</text>
-          <text x="13" y="39" fill="var(--fg-muted)" font-size="10.5" class="mono">\${esc(sub)}</text>
+          \${renderGripDots(NODE_W - 16, 13)}
+          <text x="14" y="23.5" fill="var(--fg)" font-size="11.5" font-weight="600" class="mono">\${esc(shortName)}</text>
+          <text x="14" y="41.5" fill="var(--fg-muted)" font-size="10.5" class="mono">\${esc(sub)}</text>
         </g>
       \`;
     }

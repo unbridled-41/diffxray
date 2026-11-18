@@ -3,7 +3,7 @@
   "name": "io.github.unbridled-41/diffxray",
   "title": "DiffXray",
   "description": "Zero-dependency Git diff & PR X-ray: blast-radius caller map, moved-code collapsing & silent-bug radar.",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "websiteUrl": "https://unbridled-41.github.io/diffxray/",
   "repository": {
     "url": "https://github.com/unbridled-41/diffxray",
