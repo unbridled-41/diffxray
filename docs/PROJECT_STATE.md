@@ -26,7 +26,9 @@
 | PR #14 | #6 | M3 (Closed) | Zero-install client-side Live PR Web Studio (`?pr=owner/repo/num`) & GitHub Pages deploy | Merged |
 | PR #15 | #7 | M3 (Closed) | Universal `SKILL.md` (`skills.sh`), Claude/Codex plugins, animated hero media, bilingual README & `v1.0.0` release | Merged |
 | PR #17 | #16 | M4 (Active) | `v1.1.0`: Side-by-side Split Diff toggle, `.diffxray.json` policy config, `glama.json`, `server.json`, `Dockerfile`, `llms.txt` & `telemetry.mjs` | Merged |
-| PR #19 | #18 | M4 (Active) | `v1.2.0`: Live Browser QA fixes (Light Theme `:root` leak, SVG card symmetry, Blast-Radius auto-fit), GitHub commit URLs & `--install-hook` | Merged / Active |
+| PR #19 | #18 | M4 (Active) | `v1.2.0`: Live Browser QA fixes (Light Theme `:root` leak, SVG card symmetry, Blast-Radius auto-fit), GitHub commit URLs & `--install-hook` | Merged |
+| PR #20 | #8 | M4 (Active) | Automated 6h cloud telemetry workflow on Issue #8 + `docs/LAUNCH_KIT_READY.md` | Merged |
+| PR #21 | #8 | M4 (Active) | Persist `punkpeye/awesome-mcp-servers#19907`, `ruanyf/weekly#13487` & `HelloGitHub#4399` outreach ledger | Merged |
 
 ---
 
