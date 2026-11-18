@@ -22,6 +22,13 @@
 | `2026-11-18T05:54:56Z` | **6h Cloud Telemetry Cron Enabled** | [`.github/workflows/growth-telemetry.yml`](../.github/workflows/growth-telemetry.yml) | Live Star/Fork/Download dashboard auto-updating on [Issue #8](https://github.com/unbridled-41/diffxray/issues/8) |
 | `2026-11-18T05:58:50Z` | **Tech Enthusiast Weekly Submission** | [`ruanyf/weekly#13487`](https://github.com/ruanyf/weekly/issues/13487) (108.2k⭐) | Official creator self-recommendation issue opened |
 | `2026-11-18T05:58:56Z` | **HelloGitHub Monthly Submission** | [`521xueweihan/HelloGitHub#4399`](https://github.com/521xueweihan/HelloGitHub/issues/4399) (189.6k⭐) | Official structured YAML project submission opened |
+| `2026-11-18T06:30:00Z` | **`v2.0.0` Claude-Editorial Redesign** | [Release `v2.0.0`](https://github.com/unbridled-41/diffxray/releases/tag/v2.0.0) & GitHub Pages | Warm cream `#FAF9F5` / espresso `#191816` showcase website, Newsreader serif, `EN/中文` switcher & synced Workbench |
+| `2026-11-18T06:38:20Z` | **Awesome GitHub Actions PR** | [`sdras/awesome-actions#1043`](https://github.com/sdras/awesome-actions/pull/1043) (28.4k⭐) | Added under `### Pull Requests` following exact single-line & commit guidelines |
+| `2026-11-18T06:38:30Z` | **GitHubDaily Self-Recommendation** | [`GitHubDaily/GitHubDaily#1393`](https://github.com/GitHubDaily/GitHubDaily/issues/1393) (48.5k⭐) | Creator showcase issue opened with live v2.0 interactive Studio URL |
+| `2026-11-18T06:45:25Z` | **Awesome Code Review PR** | [`joho/awesome-code-review#176`](https://github.com/joho/awesome-code-review/pull/176) (5.2k⭐) | Alphabetical entry added to `## Tools` |
+| `2026-11-18T06:45:50Z` | **Awesome-MCP-ZH PR** | [`yzfly/Awesome-MCP-ZH#1095`](https://github.com/yzfly/Awesome-MCP-ZH/pull/1095) (7.8k⭐) | Chinese MCP directory PR added under `### 🔄 版本控制` |
+| `2026-11-18T06:47:42Z` | **TensorBlock MCP Index PR** | [`TensorBlock/awesome-mcp-servers#6285`](https://github.com/TensorBlock/awesome-mcp-servers/pull/6285) (1.1k⭐) | Added under `docs/version-control.md` |
+| `2026-11-18T06:52:58Z` | **MCPServers.org Web Submission** | `https://mcpservers.org/submit` (`wong2/awesome-mcp-servers`, 4.4k⭐) | Public Free (`$0`) directory submission confirmed (`提交成功！`) |
 
 ---
 
@@ -31,12 +38,16 @@ Before submitting any ecosystem Pull Request, we audited every target directory'
 
 | Directory Repository | Stars | Maintainer Rule Summary | Day-1 Eligibility & Action Plan |
 | --- | ---: | --- | --- |
-| `punkpeye/awesome-mcp-servers` | 97,830⭐ | Welcomes public installable MCP servers; explicit fast-track lane (`🤖🤖🤖`) | **ELIGIBLE DAY 1** — Submit 1-line alphabetical PR under `Version Control` right after `v1.1.0` (`glama.json` + `server.json`) lands |
-| `appcypher/awesome-mcp-servers` | 5,840⭐ | Welcomes succinct single-server PRs under matching category | **ELIGIBLE DAY 1** — Submit clean 1-line PR under `Version Control` |
-| `hesreallyhim/awesome-claude-code` | 58,254⭐ | Requires `>= 14 days old` OR `>= 100 stars` | **DEFERRED** until `>= 100⭐` (respecting maintainer ground rules) |
+| `punkpeye/awesome-mcp-servers` | 97,831⭐ | Welcomes public installable MCP servers; automated `check-submission` | **SUBMITTED** — [`#19907`](https://github.com/punkpeye/awesome-mcp-servers/pull/19907) |
+| `sdras/awesome-actions` | 28,448⭐ | End of category, single-line Title Case, repo URL in commit body | **SUBMITTED** — [`#1043`](https://github.com/sdras/awesome-actions/pull/1043) |
+| `yzfly/Awesome-MCP-ZH` | 7,847⭐ | Welcomes real verifiable MCP servers with Chinese docs; no Star threshold | **SUBMITTED** — [`#1095`](https://github.com/yzfly/Awesome-MCP-ZH/pull/1095) |
+| `joho/awesome-code-review` | 5,190⭐ | Alphabetical under `## Tools`, single link, concise non-promotional sentence | **SUBMITTED** — [`#176`](https://github.com/joho/awesome-code-review/pull/176) |
+| `wong2/awesome-mcp-servers` | 4,411⭐ | Web submission portal at `mcpservers.org/submit` | **SUBMITTED** — Free `$0` portal submission confirmed |
+| `TensorBlock/awesome-mcp-servers` | 1,096⭐ | Category markdown bullet under `docs/version-control.md` | **SUBMITTED** — [`#6285`](https://github.com/TensorBlock/awesome-mcp-servers/pull/6285) |
+| `hesreallyhim/awesome-claude-code` | 58,258⭐ | Requires `>= 14 days old` OR `>= 100 stars` | **DEFERRED** until `>= 100⭐` (respecting maintainer ground rules) |
 | `VoltAgent/awesome-agent-skills` | 37,306⭐ | Requires prior community adoption ("Brand new skills not accepted") | **DEFERRED** until initial community adoption achieved |
 | `heilcheng/awesome-agent-skills` | 6,406⭐ | Requires `>= 20 stars` AND `> 14 days old` | **DEFERRED** until `2026-12-03` & `>= 20⭐` |
-| `wong2/awesome-mcp-servers` | 4,411⭐ | Does not accept GitHub PRs; web form at `mcpservers.org/submit` | **WEB SUBMISSION** noted for manual/browser portal |
+| `agarrharr/awesome-cli-apps` | 18,300⭐ | Requires `> 3 months old` AND `> 20 stars` | **DEFERRED** until age & star threshold met |
 
 ---
 

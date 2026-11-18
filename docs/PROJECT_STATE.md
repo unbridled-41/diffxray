@@ -5,8 +5,8 @@
 ## 1. Current Status Summary
 
 - **Repository**: `https://github.com/unbridled-41/diffxray`
-- **Live Web Studio**: `https://unbridled-41.github.io/diffxray/` (`HTTP 200` verified)
-- **Current Version**: `1.2.0`
+- **Live Web Studio**: `https://unbridled-41.github.io/diffxray/` (`HTTP 200` verified — `v2.0` Warm Archival Editorial Design System)
+- **Current Version**: `2.0.1`
 - **Current Phase**: Phase 4 — 7-Day 1,000-Star Growth Sprint & Continuous Iteration (`Milestone M4`)
 - **Formal `v1.0.0` Public Launch Timestamp**: **`2026-11-18T05:19:58Z`** (Baseline: `0` Stars)
 - **7-Day Assessment Deadline (`T+168h`)**: **`2026-11-25T05:19:58Z`**
@@ -29,17 +29,19 @@
 | PR #19 | #18 | M4 (Active) | `v1.2.0`: Live Browser QA fixes (Light Theme `:root` leak, SVG card symmetry, Blast-Radius auto-fit), GitHub commit URLs & `--install-hook` | Merged |
 | PR #20 | #8 | M4 (Active) | Automated 6h cloud telemetry workflow on Issue #8 + `docs/LAUNCH_KIT_READY.md` | Merged |
 | PR #21 | #8 | M4 (Active) | Persist `punkpeye/awesome-mcp-servers#19907`, `ruanyf/weekly#13487` & `HelloGitHub#4399` outreach ledger | Merged |
+| PR #23 | #22 | M4 (Active) | `v2.0.0`: Anthropic/Claude-inspired Warm Archival Editorial Showcase Website, synced Paper/Dusk Studio & vector assets | Merged |
+| PR #24 | #8 | M4 (Active) | `v2.0.1`: Live v2.0 QA micro-polish (4-col KPI row, scroll-margin-top, workbench i18n) + Wave 2 outreach ledger (9 live channels) | Merged |
 
 ---
 
 ## 3. Next Highest-Priority Tasks (For Continuous / Resumed Execution)
 
-1. **Ecosystem PR Follow-Up**: Monitor review comments and automated CI checks on open PRs to `punkpeye/awesome-mcp-servers` and `appcypher/awesome-mcp-servers`; respond promptly to maintainer requests.
-2. **Community Launch Amplification (`Issue #8`)**: Coordinate authenticated human posting for Hacker News (`Show HN`), Reddit (`r/ClaudeAI`, `r/programming`, `r/vibecoding`), X/Twitter, Linux.do, and V2EX using [`docs/GROWTH_PLAYBOOK.md`](GROWTH_PLAYBOOK.md), then respond to every technical comment/issue within minutes.
+1. **Ecosystem PR & Issue Follow-Up (9 Active Channels)**: Monitor maintainer feedback across `punkpeye/awesome-mcp-servers#19907`, `ruanyf/weekly#13487`, `521xueweihan/HelloGitHub#4399`, `GitHubDaily/GitHubDaily#1393`, `sdras/awesome-actions#1043`, `yzfly/Awesome-MCP-ZH#1095`, `joho/awesome-code-review#176`, `TensorBlock/awesome-mcp-servers#6285`, and `mcpservers.org`.
+2. **Community Launch Amplification (`Issue #8`)**: Coordinate authenticated human posting for Hacker News (`Show HN`), Reddit (`r/ClaudeAI`, `r/programming`, `r/vibecoding`), X/Twitter, Linux.do, V2EX, and Glama OAuth claim using [`docs/LAUNCH_KIT_READY.md`](LAUNCH_KIT_READY.md), then respond to every technical comment/issue promptly.
 3. **Threshold-Gated Directory Submissions**:
    - At `>= 100⭐`: Submit to `hesreallyhim/awesome-claude-code` & `VoltAgent/awesome-agent-skills`.
    - At `T+14d` & `>= 20⭐`: Submit to `heilcheng/awesome-agent-skills`.
-4. **`v1.2.0` Feature Backlog**: GitLab Merge Request (`/-/merge_requests/:id`) & raw commit URL fetching in Web Studio; pre-push Git hook installer (`diffxray --install-hook`).
+4. **`v2.1` Feature Backlog**: GitLab Merge Request (`/-/merge_requests/:id`) client-side fetching in Web Studio; VS Code / Cursor command-palette wrapper extension.
 
 ---
 

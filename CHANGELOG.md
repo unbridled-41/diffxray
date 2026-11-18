@@ -2,6 +2,13 @@
 
 All notable changes to **DiffXray** are documented in this file.
 
+## [2.0.1] - 2026-11-18
+
+### Fixed & Polished (Live v2.0 QA)
+- **Symmetric 4-Column Studio KPI Row**: Fixed `.kpi-row` inside `renderHtmlStudio()` to stay in a balanced 4-column desktop row inside embedded workbench widths (`1058px`) instead of wrapping `3 + 1`.
+- **Sticky Topbar Anchor Offset**: Added smooth scrolling and `scroll-margin-top: 84px` to anchored showcase sections so section headers never tuck beneath the frosted navigation bar.
+- **Complete Workbench Localization**: Added `EN / 中文` localization for `#pr-input` placeholder and fullscreen toggle states (`⤢ 全屏展开` / `✕ 退出全屏`).
+
 ## [2.0.0] - 2026-11-18
 
 ### Editorial Design System & Full Showcase Website
